@@ -170,11 +170,18 @@ can prevent that - not this one, and not a native app either. Stopping it is a
 setting on the device.
 
 **Android - Screen pinning.** Settings → Security (or Security & privacy) →
-More security settings → App pinning. Turn it on, and turn on *Ask for PIN
-before unpinning*. Then open the app, swipe up and hold to show recents, and tap
-the pin icon on its card. The device is now stuck in the app until someone
-enters the PIN. This is the single most useful thing to set up, it is built into
-Android, and it takes about two minutes.
+More security settings → App pinning. Turn it on, then open the app, swipe up
+and hold to show recents, and tap the pin icon on its card. The device is now
+stuck in the app.
+
+How you get *out* varies by phone and by which navigation style is in use -
+usually holding Back and Overview together, or swiping up and holding. Some
+builds offer *Ask for PIN before unpinning* on the same settings screen; enable
+it if it is there. If it is not, the hold gesture alone is still far beyond an
+accidental tap, which is what this is guarding against.
+
+This is the single most useful thing to set up, it is built into Android, and it
+takes about two minutes.
 
 **iPhone/iPad - Guided Access.** Settings → Accessibility → Guided Access. Turn
 it on, set a passcode, then triple-click the side button inside the app.

@@ -655,10 +655,10 @@ function screenAdmin() {
   voicePanel.append(row('Use offline voice (faster)', toggleBtn('preferLocalVoice')));
   voicePanel.append(
     el('div', { class: 'note' },
-      'Google voices sound better but are fetched over the internet, so there is '
-      + 'a pause before each one starts. Turning this on uses a voice already on '
-      + 'the device: plainer, but it speaks immediately. Worth trying if the learner '
-      + 'stops waiting for the sound.'
+      'On by default. Uses a voice already on the device, so it speaks with no '
+      + 'pause and works offline. On Android those are the same Google voices, so '
+      + 'there is nothing to lose. Turn it off only on a desktop where the '
+      + 'installed voices sound dated and the internet is reliable.'
     )
   );
 

@@ -13,7 +13,10 @@ const DEFAULTS = {
     enVolume: 1,          // per-language volume, to balance mismatched voices
     hiVolume: 1,
     autoSpeak: true,      // speak the prompt on arrival without a tap
-    preferLocalVoice: false, // trade voice quality for instant playback
+    // On Android the on-device voices are the good Google ones, so this costs
+    // no quality and removes the network round trip before every prompt. On
+    // Windows the local voices are plainer; turn it off there if it matters.
+    preferLocalVoice: true,
     choices: 'auto',      // 'auto' | 2 | 3 | 4
     categories: null      // null = all enabled, else array of category ids
   },
