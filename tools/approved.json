@@ -1,0 +1,26 @@
+{
+  "words": [],
+  "phrases": [],
+  "examples": {
+    "food/apple": {
+      "en": "I eat an apple.",
+      "hi": "मैं सेब खाता हूँ।"
+    },
+    "food/banana": {
+      "en": "There is a banana on the table.",
+      "hi": "टेबल पर केला है।"
+    },
+    "food/mango": {
+      "en": "The mango is yellow and sweet.",
+      "hi": "आम पीला और मीठा है।"
+    },
+    "food/orange": {
+      "en": "I have an orange in my bag.",
+      "hi": "मेरे बैग में संतरा है।"
+    },
+    "food/grapes": {
+      "en": "The grapes are red and juicy.",
+      "hi": "अंगूर लाल और रसदार हैं।"
+    }
+  }
+}

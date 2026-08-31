@@ -1,0 +1,653 @@
+/* ---------------------------------------------------------------------------
+   My English - app styles.
+   Design rules that everything below serves:
+     - one screen, one job, one obvious action
+     - nothing tappable that is not part of the lesson
+     - large targets (nothing under 72px), calm colours, no flashing
+     - no scrolling on learner screens; nothing can be swiped away by accident
+--------------------------------------------------------------------------- */
+
+:root {
+  --bg: #fbf6ec;
+  --surface: #ffffff;
+  --ink: #241f1a;
+  --ink-soft: #6b6157;
+  --line: #e6dcca;
+
+  --teal: #0e7c6f;
+  --teal-dark: #0a5d53;
+  --amber: #e08a2e;
+  --plum: #7a4fa3;
+  --rose: #c8496b;
+  --green: #2f9e50;
+
+  --radius: 28px;
+  --shadow: 0 6px 0 rgba(0, 0, 0, 0.10);
+  --font: 'Segoe UI', system-ui, -apple-system, 'Noto Sans', sans-serif;
+  --font-hi: 'Nirmala UI', 'Noto Sans Devanagari', 'Mangal', var(--font);
+  --font-emoji: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  /* Nothing on a learner screen should be selectable, draggable or zoomable. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+#root {
+  height: 100dvh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.emoji {
+  font-family: var(--font-emoji);
+  line-height: 1;
+}
+
+.hi {
+  font-family: var(--font-hi);
+}
+
+/* --- screen shell -------------------------------------------------------- */
+
+.screen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 2vh, 20px);
+  padding: clamp(12px, 2.5vh, 24px);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 0 0 auto;
+}
+
+.home-btn {
+  width: clamp(64px, 9vh, 88px);
+  height: clamp(64px, 9vh, 88px);
+  flex: 0 0 auto;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 3px solid var(--line);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  font-size: clamp(30px, 4.5vh, 42px);
+  transition: transform 0.08s ease;
+}
+
+.home-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Star strip: pure feedback, never interactive, never a way to lose. */
+.stars {
+  flex: 1;
+  display: flex;
+  gap: clamp(4px, 1vw, 10px);
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+  min-width: 0;
+  overflow: hidden;
+  /* Ten stars plus the home button must fit the narrowest phone, so the width
+     of the screen caps the size as well as its height. */
+  font-size: min(clamp(18px, 3.4vh, 34px), 4.2vw);
+}
+
+.stars span {
+  opacity: 0.22;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.stars span.on {
+  opacity: 1;
+  transform: scale(1.12);
+}
+
+/* --- home ---------------------------------------------------------------- */
+
+.home {
+  justify-content: center;
+  gap: clamp(14px, 3vh, 28px);
+}
+
+.home-title {
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.home-title .big {
+  font-size: clamp(28px, 5vh, 46px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.home-title .sub {
+  font-size: clamp(17px, 2.6vh, 24px);
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.tiles {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(12px, 2.4vh, 22px);
+}
+
+.tile {
+  border-radius: var(--radius);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.2vh, 12px);
+  box-shadow: 0 7px 0 rgba(0, 0, 0, 0.16);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  padding: 10px;
+  min-height: 108px;
+}
+
+.tile:active {
+  transform: translateY(5px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.16);
+}
+
+.tile .ico {
+  font-size: clamp(38px, 8vh, 76px);
+}
+
+.tile .lab-hi {
+  font-family: var(--font-hi);
+  font-size: clamp(20px, 3.4vh, 34px);
+  font-weight: 700;
+}
+
+.tile .lab-en {
+  font-size: clamp(13px, 1.9vh, 19px);
+  opacity: 0.9;
+  letter-spacing: 0.4px;
+}
+
+.t-words   { background: var(--teal); }
+.t-listen  { background: var(--amber); }
+.t-read    { background: var(--plum); }
+.t-phrases { background: var(--rose); }
+.t-sentences { background: var(--teal-dark); }
+
+/* Five tiles in a two-column grid: the last one spans the full width rather
+   than leaving a hole beside it. */
+.tiles .tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+/* Invisible caregiver corners. No hover, no cursor, no visual trace: a stray
+   tap here must produce nothing at all. */
+.corner {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  z-index: 40;
+  background: transparent;
+  cursor: default;
+}
+
+/* The bottom two sit above the system gesture strip on Android, which would
+   otherwise swallow the tap. */
+.corner.tl { top: 0; left: 0; }
+.corner.tr { top: 0; right: 0; }
+.corner.bl { bottom: calc(env(safe-area-inset-bottom) + 24px); left: 0; }
+.corner.br { bottom: calc(env(safe-area-inset-bottom) + 24px); right: 0; }
+
+/* --- category grid ------------------------------------------------------- */
+
+.grid-cats {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 26vw, 200px), 1fr));
+  grid-auto-rows: 1fr;
+  gap: clamp(10px, 1.8vh, 18px);
+}
+
+.cat {
+  border-radius: 22px;
+  background: var(--surface);
+  border: 3px solid var(--line);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 92px;
+  transition: transform 0.08s ease;
+}
+
+.cat:active {
+  transform: translateY(4px);
+}
+
+.cat .ico { font-size: clamp(30px, 5.4vh, 52px); }
+.cat .lab-hi { font-family: var(--font-hi); font-size: clamp(16px, 2.4vh, 24px); font-weight: 700; }
+.cat .lab-en { font-size: clamp(12px, 1.6vh, 16px); color: var(--ink-soft); }
+
+/* --- word / phrase card -------------------------------------------------- */
+
+.card {
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 4px solid var(--line);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1.6vh, 18px);
+  padding: clamp(10px, 2vh, 24px);
+  text-align: center;
+  transition: transform 0.09s ease;
+}
+
+.card:active { transform: scale(0.99); }
+
+.card .pic {
+  font-size: clamp(64px, 22vh, 190px);
+}
+
+.card .pic-swatch {
+  width: clamp(90px, 20vh, 180px);
+  height: clamp(90px, 20vh, 180px);
+  border-radius: 50%;
+  border: 5px solid rgba(0, 0, 0, 0.14);
+}
+
+.card .pic-num {
+  font-size: clamp(80px, 24vh, 200px);
+  font-weight: 800;
+  color: var(--teal);
+  line-height: 1;
+}
+
+.card .word-en {
+  font-size: clamp(34px, 7vh, 74px);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.card .word-en.phrase {
+  font-size: clamp(24px, 4.6vh, 48px);
+  line-height: 1.2;
+}
+
+.card .word-hi {
+  font-family: var(--font-hi);
+  font-size: clamp(24px, 4.4vh, 46px);
+  color: var(--teal-dark);
+  font-weight: 600;
+}
+
+.card .word-hi.phrase {
+  font-size: clamp(19px, 3.2vh, 34px);
+}
+
+.sent-pic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.4vw, 16px);
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* The verb reads as a modifier of the object, so it sits smaller - but sized
+   explicitly, never in em. `.verb` and `.pic`/`.ico` sit on the same element
+   and have equal specificity, so a relative size here resolves against the
+   inherited body size and collapses the glyph to ~10px. */
+.sent-pic .verb { opacity: 0.9; }
+
+/* Noun sizes. Width caps the size as well as height, so two pictures always fit
+   one tile on a narrow phone. */
+.card .sent-pic .pic          { font-size: min(clamp(64px, 22vh, 190px), 34vw); }
+.choice .sent-pic .ico        { font-size: min(clamp(40px, 13vh, 118px), 20vw); }
+.choices.n3 .sent-pic .ico    { font-size: min(clamp(30px, 10vh, 90px), 13vw); }
+
+/* Verb sizes. These MUST come after the noun rules: `.verb` and `.pic`/`.ico`
+   sit on the same element with equal specificity, so source order decides, and
+   the verb is meant to read as the smaller modifier. Sizes are absolute, never
+   em - a relative size resolves against the inherited body size and collapses
+   the glyph to about 10px. */
+.card .sent-pic .verb         { font-size: min(clamp(38px, 13vh, 112px), 20vw); }
+.choice .sent-pic .verb       { font-size: min(clamp(26px, 8vh, 72px), 12vw); }
+.choices.n3 .sent-pic .verb   { font-size: min(clamp(20px, 6vh, 56px), 8vw); }
+
+.card .example {
+  margin-top: clamp(4px, 1.4vh, 14px);
+  padding-top: clamp(6px, 1.4vh, 14px);
+  border-top: 3px solid var(--line);
+  width: min(92%, 760px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card .ex-en {
+  font-size: clamp(17px, 2.8vh, 30px);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.card .ex-hi {
+  font-size: clamp(15px, 2.4vh, 26px);
+  color: var(--ink-soft);
+}
+
+/* --- action row ---------------------------------------------------------- */
+
+.actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: clamp(10px, 2vw, 18px);
+}
+
+.act {
+  flex: 1;
+  min-height: clamp(76px, 11vh, 104px);
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: clamp(20px, 3vh, 30px);
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.16);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.act:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.16);
+}
+
+.act .ico { font-size: clamp(24px, 3.6vh, 36px); }
+
+/* A typographic arrow stays crisp and large; the emoji arrow renders as a
+   small boxed glyph on Windows. */
+.act .arrow {
+  font-size: clamp(34px, 5.4vh, 52px);
+  font-weight: 700;
+  line-height: 1;
+}
+.act-hear { background: var(--teal); }
+.act-hindi { background: var(--amber); font-family: var(--font-hi); }
+.act-next { background: var(--green); flex: 1.3; }
+
+/* --- quiz ---------------------------------------------------------------- */
+
+.prompt {
+  flex: 0 0 auto;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 4px solid var(--line);
+  box-shadow: var(--shadow);
+  min-height: clamp(96px, 16vh, 170px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 22px);
+  padding: 12px 18px;
+  transition: transform 0.09s ease;
+}
+
+.prompt:active { transform: scale(0.99); }
+
+.prompt .speaker { font-size: clamp(40px, 8vh, 76px); }
+
+.prompt .read-word {
+  font-size: clamp(38px, 8vh, 82px);
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.choices {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  gap: clamp(10px, 2vh, 18px);
+}
+
+.choices.n2 { grid-template-columns: 1fr 1fr; }
+.choices.n3 { grid-template-columns: repeat(3, 1fr); }
+.choices.n4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+
+.choice {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 4px solid var(--line);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  min-height: 92px;
+  transition: transform 0.09s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.choice:active { transform: translateY(4px); }
+
+.choice .ico { font-size: clamp(46px, 13vh, 118px); }
+
+.choice .swatch {
+  width: clamp(58px, 12vh, 120px);
+  height: clamp(58px, 12vh, 120px);
+  border-radius: 50%;
+  border: 5px solid rgba(0, 0, 0, 0.14);
+}
+
+.choice .num {
+  font-size: clamp(52px, 14vh, 130px);
+  font-weight: 800;
+  color: var(--teal);
+}
+
+.choice.right {
+  border-color: var(--green);
+  background: #eafaee;
+}
+
+.choice.wrong {
+  animation: shake 0.4s ease;
+  border-color: #e3c6c6;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-9px); }
+  40% { transform: translateX(9px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+/* --- overlays ------------------------------------------------------------ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(251, 246, 236, 0.92);
+  animation: pop 0.25s ease;
+}
+
+.overlay .mark {
+  font-size: clamp(90px, 26vh, 220px);
+}
+
+.overlay .msg {
+  font-family: var(--font-hi);
+  font-size: clamp(28px, 5vh, 52px);
+  font-weight: 800;
+  color: var(--green);
+  text-align: center;
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Start gate: satisfies the browser's "speech needs a gesture" rule. */
+.gate {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  text-align: center;
+  padding: 24px;
+}
+
+.gate .big-emoji { font-size: clamp(72px, 20vh, 170px); }
+
+.gate .go {
+  background: var(--teal);
+  color: #fff;
+  border-radius: 999px;
+  padding: clamp(18px, 3vh, 30px) clamp(40px, 9vw, 84px);
+  font-size: clamp(26px, 4.4vh, 44px);
+  font-weight: 800;
+  font-family: var(--font-hi);
+  box-shadow: 0 7px 0 rgba(0, 0, 0, 0.18);
+}
+
+.gate .go:active { transform: translateY(5px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18); }
+
+/* --- caregiver panel (adults only; never reached by accident) ------------ */
+
+.admin {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  user-select: text;
+  -webkit-user-select: text;
+  gap: 18px;
+}
+
+.admin h1 {
+  font-size: 26px;
+  margin: 0;
+}
+
+.admin h2 {
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--ink-soft);
+  margin: 18px 0 6px;
+}
+
+.admin .panel {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.admin .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 17px;
+}
+
+.admin .row:last-child { border-bottom: none; }
+
+.admin select,
+.admin input[type='range'] {
+  font-size: 16px;
+  min-height: 40px;
+  max-width: 58%;
+}
+
+.admin .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin .chip {
+  border: 2px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 15px;
+  font-family: var(--font-hi);
+}
+
+.admin .chip.on {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+
+.admin .btn {
+  background: var(--teal);
+  color: #fff;
+  border-radius: 12px;
+  padding: 14px 22px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.admin .btn.danger { background: var(--rose); }
+.admin .note { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+.admin .warn { color: var(--rose); font-weight: 600; }
+
+/* Landscape phones: keep the card from squeezing the buttons out of view. */
+@media (max-height: 460px) {
+  .tiles { grid-template-columns: repeat(4, 1fr); }
+  .card .pic { font-size: clamp(48px, 26vh, 120px); }
+}

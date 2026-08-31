@@ -1,0 +1,340 @@
+# My English
+
+A quiet, offline, ad-free way to learn English from Hindi.
+
+Built for an adult beginner with a learning disability who reads Devanagari and
+speaks everyday Hindi, and for whom an ad or an unexpected popup ends the
+session. It should suit any beginner who needs a calm, narrow interface.
+
+No account. No ads. No network access at all once it has loaded — which is what
+guarantees nothing can ever interrupt a session. Progress lives in the device's
+own storage and never leaves it.
+
+---
+
+## What the learner sees
+
+A start screen, then four choices. That is the entire interface.
+
+| Mode | Hindi | What the learner does |
+| --- | --- | --- |
+| **Words** | शब्द | Picture, English word, Devanagari. Tap to hear it. |
+| **Listen** | सुनो | Hears an English word, taps the matching picture. |
+| **Read** | पढ़ो | Sees a written English word, taps the matching picture. |
+| **Say it** | बोलो | Useful everyday phrases, spoken in both languages. |
+| **Sentences** | वाक्य | Whole sentences - "I ate an apple yesterday" - with the picture and both languages. |
+
+Roughly 175 words across 11 topics, 30 phrases, and 293 generated sentences.
+
+### The rules the interface follows
+
+- **One screen, one job.** Every screen has one obvious action and a single
+  large 🏠 button in the same corner.
+- **Nothing extra is tappable.** No links, no menus, no settings, nothing that
+  leads out of the app.
+- **Wrong answers cost nothing.** A soft nudge, the word repeated, and the right
+  answer still waiting. No timers, no streaks, no losing, no dead ends — running
+  out of cards reshuffles instead of stopping.
+- **Nothing can be swiped or zoomed away.** Scrolling, zoom, text selection,
+  long-press menus and drag are all disabled on the learner's screens.
+- **The Android back button cannot exit.** It returns to the home screen. (The
+  system's own gestures still work - see *Locking the device* below.)
+- **The screen will not sleep** mid-lesson.
+- **Difficulty adjusts itself**, starting at 2 pictures and widening to 3 or 4
+  only once the learner is answering most questions correctly. Words unseen or
+  recently missed come around more often.
+
+---
+
+## The caregiver screen
+
+Settings are reachable only by tapping **the four corners of the home screen in
+this order, within six seconds**:
+
+> **top-left → bottom-right → top-right → bottom-left**
+
+Nothing on screen reacts until the whole sequence is correct — no highlight, no
+prompt, no half-finished state — so a stray corner tap does nothing visible, and
+there is no popup to get stuck in.
+
+There you can set speaking speed and voices, turn spoken Hindi on or off, fix the
+number of answer choices, switch topics on and off, and see progress.
+
+---
+
+## Running it on Windows
+
+Double-click **`start-windows.bat`**.
+
+It starts a small local server and opens Chrome (or Edge) in fullscreen app
+mode — no address bar, no tabs, no menus. Closing the window ends the session;
+the server window can be closed afterwards.
+
+To make it a real installed app instead, open `http://localhost:8137/` in Chrome
+and use **⋮ → Cast, save and share → Install page as app**. It then has its own
+Start-menu entry and window.
+
+### Trying it on a phone without hosting anything
+
+```
+python tools/serve.py 8137 --lan
+```
+
+prints a `http://192.168.x.x:8137/` address that a phone on the same Wi-Fi can
+open. Speech works over plain LAN, so this is enough to hear the device's real
+voices. Install-to-home-screen and offline caching need HTTPS, so those still
+require hosting. `--lan` serves the folder to your local network - stop it when
+you are done.
+
+`tools/phone-preview.html` shows the app at three phone viewport sizes in
+iframes, which is a real layout test (inside a frame, `vh`/`vw` resolve to the
+frame). Note that `scrollWidth` cannot detect overflow here: `body` has
+`overflow: hidden`, which clamps it. Compare element rectangles against
+`innerWidth`/`innerHeight` instead.
+
+## Running it on Android
+
+Android needs the app served over HTTPS before it can be installed to the home
+screen and cached offline. A local `http://192.168.…` address will not do — the
+browser blocks offline caching on those.
+
+The simplest free host is GitHub Pages:
+
+1. Create a repository and push this folder to it.
+2. Repository **Settings → Pages → Source: Deploy from a branch → main / (root)**.
+3. Wait a minute, then open the `https://<user>.github.io/<repo>/` address it
+   gives you, on the learner's phone in **Chrome**.
+4. **⋮ → Add to Home screen.**
+
+After that first load the app works with the phone in aeroplane mode. Opening it
+from the home-screen icon launches it fullscreen: no address bar, no tabs,
+nothing to tap out of.
+
+---
+
+## Sentences
+
+Words alone do not get anyone to "I ate an apple yesterday". That mode is built
+from hand-written templates applied to grammar-tagged nouns, in
+`js/sentences.js` - twelve templates over 59 nouns give 293 sentences, and
+adding one template adds dozens more. They cover past, present and future, and
+"I", "he" and "she" subjects.
+
+They are generated rather than written out because Hindi will not let you
+concatenate. A past-tense transitive sentence takes the ergative ने, and the
+verb agrees with the gender and number of the **object**:
+
+```
+कल मैंने सेब खाया।     I ate an apple yesterday.    (सेब   m sg)
+कल मैंने ब्रेड खाई।     I ate bread yesterday.       (ब्रेड  f sg)
+कल मैंने अंगूर खाए।     I ate grapes yesterday.      (अंगूर m pl)
+कल मैंने चाय पी।       I drank tea yesterday.       (चाय  f sg)
+```
+
+So every noun carries a gender, a number and its English article, and every
+past-tense template carries all four verb forms. English needs the same care in
+the other direction - articles and countability - which is why the templates
+distinguish "I want a book" from "I want water", and "This is an elephant" from
+"These are grapes".
+
+Every fourth card is a recognition question: the sentence is spoken and the
+learner taps the right picture. Sentences are shown as picture pairs - the verb, then what it
+acts on (👨👀⚽ for "He saw a ball", 😋🥚 for "I am eating an egg") - so nothing
+has to be read. Choices are drawn from the four sentences just shown, and never
+share a picture pair, so the answer is always decidable.
+
+Two tenses agree with the **subject** rather than the object, which means the
+learner's own gender changes the Hindi: "I will eat" is कल मैं खाऊँगा for a boy
+and कल मैं खाऊँगी for a girl. The caregiver screen has that setting; it only
+affects sentences that say "I". Note also that कल is both *yesterday* and
+*tomorrow* - the verb tense is what separates them, which is real Hindi and
+worth meeting early.
+
+**The one thing worth checking is the gender tags.** A wrong tag silently
+corrupts every sentence built from that noun. `tools/review/genders.txt` lists
+each noun with a sentence whose verb ending reveals its tag; scanning that file
+is a five-minute job and fixing one is a single letter in `NOUNS`.
+
+---
+
+## Locking the device
+
+This is the part the app cannot do for itself, and it matters more than
+anything in the interface.
+
+Installed to the home screen, the app runs fullscreen with no address bar, no
+tabs and no menus, and nothing inside it leads anywhere else. But it is still a
+page on a device: **the system gestures still work.** A swipe up goes home, the
+back gesture leaves, the notification shade pulls down. No web app of any kind
+can prevent that - not this one, and not a native app either. Stopping it is a
+setting on the device.
+
+**Android - Screen pinning.** Settings → Security (or Security & privacy) →
+More security settings → App pinning. Turn it on, and turn on *Ask for PIN
+before unpinning*. Then open the app, swipe up and hold to show recents, and tap
+the pin icon on its card. The device is now stuck in the app until someone
+enters the PIN. This is the single most useful thing to set up, it is built into
+Android, and it takes about two minutes.
+
+**iPhone/iPad - Guided Access.** Settings → Accessibility → Guided Access. Turn
+it on, set a passcode, then triple-click the side button inside the app.
+
+**Windows.** A chromeless window is not a lock: Alt-Tab and the Windows key
+still work. `start-windows.bat` is fine for supervised use. For unsupervised
+use, set up Assigned Access (kiosk mode) for a dedicated account.
+
+Install the app first and pin *that*. Pinning the browser instead leaves the
+address bar reachable, and pins a browser rather than a lesson.
+
+---
+
+## Voices
+
+Speech uses the device's own voices, so no audio is ever downloaded or streamed
+by the app itself.
+
+**One caveat that matters.** Chrome also exposes Google's *cloud* voices
+alongside the locally installed ones, and those need a live connection. On a
+stock Windows 10 machine the only Hindi voice available is usually the cloud one
+(`Google हिन्दी`), which means Hindi audio goes silent the moment the device is
+offline — exactly the situation this app is built for. The app prefers a local
+voice whenever one exists, marks cloud voices as *needs internet* in the voice
+pickers, and shows a warning on the caregiver screen when either language has
+landed on one.
+
+To install a real on-device voice:
+
+- **Windows** — Settings → Time & language → Language & region → add **Hindi** →
+  Language options → install **Speech**.
+- **Android** — install *Google Text-to-speech*, then Settings → System →
+  Languages & input → Text-to-speech output → download **Hindi**.
+
+If no Hindi voice exists at all, the app shows Devanagari as text and stays
+silent in Hindi rather than reading it with an English voice.
+
+English voices are ranked so a local one always beats a cloud one, and Windows
+10's legacy `Microsoft Ravi` and `Microsoft Heera` are demoted: they are
+Indian-accented, which suits a Hindi speaker, but they are thin, quiet voices that
+sound like 1998, and a modern voice on the same machine teaches better. On
+Android the Google Indian-English voices are good and are preferred normally.
+
+The caregiver screen lists every voice actually found, previews each one, and
+has a separate **volume** slider per language — cloud and local voices are often
+mismatched in loudness, and this is how you balance them.
+
+---
+
+## Changing the words
+
+Everything the learner meets lives in `js/data.js`. Each entry is one line:
+
+```js
+{ cat: 'food', en: 'apple', hi: 'सेब', emoji: '🍎' },
+```
+
+Colors use `swatch: '#e23b3b'` and numbers use `num: '3'` instead of `emoji`.
+Add a line, reload, and it appears everywhere — including in the quizzes.
+
+Two things worth keeping to when adding words:
+
+- Pick emoji from Emoji 13 or earlier, or Windows 10 shows an empty box.
+- Avoid emoji that are really letters (🆘 renders as the word "SOS"), since the
+  picture is the whole point for a learner who cannot read yet.
+
+Personal words — familiar faces, favourite foods, places the learner knows — are
+usually worth more than more vocabulary, and swapping the emoji for real photos is a
+small change to `pictureNode()` in `js/app.js` if you want to go further.
+
+---
+
+## Drafting new content with a local model
+
+`tools/generate.py` drafts candidates with a model running on your own PC via
+Ollama; you review them; `tools/merge.py` folds in only what you approved. The
+model never runs on the learner's device and the app never calls it - the runtime stays
+static, offline and deterministic.
+
+```
+python tools/generate.py --check                      # what's installed and parsed
+python tools/generate.py sentences --topic food       # example sentences for existing words
+python tools/generate.py words --topic kitchen        # new vocabulary
+python tools/generate.py phrases                      # new everyday phrases
+python tools/merge.py tools/review/<file>.txt         # fold in the approved lines
+```
+
+Generation writes a plain-text file to `tools/review/`. Approve a candidate by
+putting an `x` in its box; edit any line first if you want to. What you approve
+is what gets merged, not what the model wrote.
+
+```
+[x] food/apple
+    en:    I eat an apple.
+    hi:    मैं सेब खाता हूँ।
+    gloss: i me apple I-eat
+```
+
+The `gloss` line is a word-by-word literal rendering of the model's Hindi, so
+the Hindi can be checked without trusting the model's own English.
+
+**Review every Hindi line.** This is the whole point of the two-step design. An
+8B model produces Hindi that reads fluently and is still wrong - wrong gender
+agreement, a missing postposition, textbook register instead of how people
+actually speak. In the first test run five of six sentences were clean and one
+was not: `मैं चावल दाल खा रहा हूँ।` for "I am eating rice with dal" drops the
+"with" and reads as "I am eating rice dal". That one is exactly what the review
+step is for. The learner cannot tell a wrong translation from a right one, so
+this file is the only thing between the model and what they learn.
+
+Approved content accumulates in `tools/approved.json` and is compiled to
+`js/generated.js`, which `js/data.js` folds in. Hand-written content in
+`data.js` is never touched. `python tools/merge.py --rebuild` regenerates
+`generated.js` from the approved record alone.
+
+Approved example sentences appear under the word on its card in Words and Say
+it, and can be tapped to hear.
+
+### Notes on models
+
+Defaults to `llama3.1:8b-instruct-q4_K_M`; `--model` picks another. On a 4 GB
+card a batch of six sentences takes roughly two minutes - the model is partly
+on the CPU. That is fine for work you run once and walk away from.
+
+Qwen-family models are generally stronger in Hindi than Llama at the same size,
+so `ollama pull qwen2.5:7b-instruct-q4_K_M` is worth trying if the Hindi needs
+too many corrections.
+
+`js/generated.js` currently holds five example sentences approved during a test
+run. Empty the `examples` object in `tools/approved.json` and re-run
+`python tools/merge.py --rebuild` if you would rather start clean.
+
+---
+
+## Layout
+
+```
+index.html            app shell
+css/app.css           all styling
+js/data.js            vocabulary and phrases (hand-written)
+js/sentences.js       sentence templates and noun grammar tags
+js/generated.js       approved model-drafted content, compiled by merge.py
+js/app.js             screens, quiz logic, the caregiver corner code
+js/speech.js          text-to-speech and the sound effects
+js/store.js           progress and settings in localStorage
+sw.js                 offline cache
+manifest.webmanifest  makes it installable
+tools/serve.py        local server
+tools/phone-preview.html  the app at phone viewport sizes, for layout checks
+tools/generate.py     drafts content with a local model, for review
+tools/merge.py        folds approved content into js/generated.js
+tools/gen_icons.py    regenerates the PNG icons
+start-windows.bat     one-click launch on Windows
+```
+
+No build step, no dependencies, no framework.
+
+### Updating an installed copy
+
+The service worker serves from cache first, then quietly refreshes in the
+background, so a change you publish is picked up the next time the app is
+opened. If you change files in `sw.js`'s asset list, bump the `CACHE` version
+string in `sw.js` so the old cache is discarded.

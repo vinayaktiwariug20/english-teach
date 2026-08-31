@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#0e7c6f"/>
+  <path d="M96 128a36 36 0 0 1 36-36h248a36 36 0 0 1 36 36v160a36 36 0 0 1-36 36H236l-70 62a10 10 0 0 1-16.6-7.5V324h-17.4a36 36 0 0 1-36-36z" fill="#ffffff"/>
+  <g fill="#0e7c6f" font-family="Segoe UI, system-ui, sans-serif" font-weight="700" text-anchor="middle">
+    <text x="256" y="245" font-size="132">A अ</text>
+  </g>
+</svg>

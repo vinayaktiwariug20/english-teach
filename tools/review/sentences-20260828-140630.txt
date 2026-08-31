@@ -1,0 +1,45 @@
+# My English - review file
+# kind: sentences    model: llama3.1:8b-instruct-q4_K_M    generated: 20260828-140630
+#
+# Approve a candidate by putting an x in its box:   [x]
+# Leave it as [ ] to skip it. Edit any line freely before approving - what you
+# approve is what gets merged, not what the model wrote.
+#
+# EVERY Hindi line needs a human read. A small local model gets Hindi wrong in
+# ways that still look fluent: wrong gender agreement, wrong postposition,
+# over-formal register. The gloss is a word-by-word crib to help you check it.
+# The learner cannot tell a wrong translation from a right one, so this file is
+# the only thing standing between the model and what they learn.
+
+# Then run:  python tools/merge.py C:/Users/vinay/Desktop/Projects/english-teach/tools/review/sentences-20260828-140630.txt
+
+[x] food/apple
+    en:    I eat an apple.
+    hi:    मैं सेब खाता हूँ।
+    gloss: i me apple I-eat
+
+[x] food/banana
+    en:    There is a banana on the table.
+    hi:    टेबल पर केला है।
+    gloss: table-on banana there-is
+
+[x] food/mango
+    en:    The mango is yellow and sweet.
+    hi:    आम पीला और मीठा है।
+    gloss: mango yellow and sweet is
+
+[x] food/orange
+    en:    I have an orange in my bag.
+    hi:    मेरे बैग में संतरा है।
+    gloss: my-bag-in orange there-is
+
+[x] food/grapes
+    en:    The grapes are red and juicy.
+    hi:    अंगूर लाल और रसदार हैं।
+    gloss: grapes red and juicy are
+
+[ ] food/rice
+    en:    I am eating rice with dal.
+    hi:    मैं चावल दाल खा रहा हूँ।
+    gloss: i me rice dal I-eat
+

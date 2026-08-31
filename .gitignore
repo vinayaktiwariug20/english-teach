@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+
+# Scratch notes, not part of the project
+continue.txt
