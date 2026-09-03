@@ -24,7 +24,7 @@ A start screen, then four choices. That is the entire interface.
 | **Say it** | बोलो | Useful everyday phrases, spoken in both languages. |
 | **Sentences** | वाक्य | Whole sentences - "I ate an apple yesterday" - with the picture and both languages. |
 
-Roughly 175 words across 11 topics, 30 phrases, and 293 generated sentences.
+Roughly 175 words across 11 topics, 30 phrases, and 576 generated sentences.
 
 ### The rules the interface follows
 
@@ -115,10 +115,27 @@ nothing to tap out of.
 ## Sentences
 
 Words alone do not get anyone to "I ate an apple yesterday". That mode is built
-from hand-written templates applied to grammar-tagged nouns, in
-`js/sentences.js` - twelve templates over 59 nouns give 293 sentences, and
-adding one template adds dozens more. They cover past, present and future, and
-"I", "he" and "she" subjects.
+from verbs crossed with tense frames over grammar-tagged nouns, in
+`js/sentences.js`. Three verbs x nine frames x 59 tagged nouns, plus three
+standalone templates, give 576 sentences. Adding one verb adds about 180 more;
+adding one frame adds about 60.
+
+The frames cover simple past, simple present, present continuous, future and
+negative past for "I", and past, present and continuous for "he" and "she":
+
+```
+कल मैंने सेब खाया।        I ate an apple yesterday.
+मैं सेब खाता हूँ।          I eat an apple.
+मैं सेब खा रहा हूँ।        I am eating an apple.
+कल मैं सेब खाऊँगा।        I will eat an apple tomorrow.
+मैंने सेब नहीं खाया।       I did not eat an apple.
+वह सेब खाती है।          She eats an apple.
+```
+
+Each verb stores its Hindi forms explicitly rather than deriving them from a
+root, because the perfectives are not regular enough: खा becomes खाया, but पी
+becomes पिया and देख becomes देखा. A verb can also skip frames whose English is
+unnatural for it - nobody says "I was seeing a dog".
 
 They are generated rather than written out because Hindi will not let you
 concatenate. A past-tense transitive sentence takes the ergative ने, and the
@@ -139,8 +156,10 @@ distinguish "I want a book" from "I want water", and "This is an elephant" from
 
 Every fourth card is a recognition question: the sentence is spoken and the
 learner taps the right picture. Sentences are shown as picture pairs - the verb, then what it
-acts on (👨👀⚽ for "He saw a ball", 😋🥚 for "I am eating an egg") - so nothing
-has to be read. Choices are drawn from the four sentences just shown, and never
+acts on, with a tense mark where there is room: 🍽️⏪ for "I ate", 🍽️⏩ for "I
+will eat", 🍽️❌ for "I did not eat", 👩🍽️ for "She eats". Nothing has to be read.
+A frame needing all three glyphs (👨🍽️⏪) will not fit a choice tile, so it is
+taught on cards and left out of the questions. Choices are drawn from the four sentences just shown, and never
 share a picture pair, so the answer is always decidable.
 
 Two tenses agree with the **subject** rather than the object, which means the

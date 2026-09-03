@@ -365,7 +365,13 @@ function sentencePicture(s, size = 'ico') {
  * is what turns a sentence he can repeat into one he recognises.
  */
 function buildSentenceQuiz() {
-  const recent = state.sentSeen.slice(-4);
+  // Some frames need three glyphs to show subject, verb and tense, which will
+  // not fit a choice tile. Those are taught on cards but never asked here.
+  const recent = state.sentSeen.slice(-4).filter((s) => s.quizzable);
+  if (!recent.length) {
+    state.sentQuiz = null;
+    return;
+  }
   const target = recent[Math.floor(Math.random() * recent.length)];
   const n = Math.min(store.choiceCount(), 3);
 
@@ -374,7 +380,7 @@ function buildSentenceQuiz() {
   // Distractors from the same recent batch first, so the choice is between
   // sentences he has actually just met. Sharing a noun with a different verb
   // is the most useful contrast, so those are not filtered out.
-  for (const s of shuffle(recent).concat(shuffle(state.deck))) {
+  for (const s of shuffle(recent).concat(shuffle(state.deck.filter((x) => x.quizzable)))) {
     if (picks.length >= n - 1) break;
     const key = `${s.icon}|${visualKey(s.word)}`;
     if (seenKeys.has(key)) continue;

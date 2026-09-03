@@ -90,102 +90,122 @@ const NOUNS = {
   'travel/truck':   { g: 'm', n: 'sg', art: 'a', use: ['see', 'this'] }
 };
 
-// Templates carry an `icon` for the verb, so a sentence can be shown as a
-// picture pair (verb + object) and recognised without reading. Icons may be two
-// emoji where one cannot carry it - 👨👀 for "he saw", 🍽️⏩ for "will eat". They
-// must never be emoji that are really letters: 🔜 renders as a box reading
-// "SOON", which is unreadable to a learner who cannot read yet.
+
+// ---------------------------------------------------------------------------
+// Verbs
 //
-// `agree` says what the Hindi verb agrees with, and this is not a detail:
-//   - 'object'  - ergative past (मैंने/उसने ... खाया). Agrees with the OBJECT,
-//                 so "He ate" and "She ate" are the same sentence in Hindi.
-//   - 'subject' - future and present (मैं ... खाऊँगा / वह ... खाती है). Agrees
-//                 with the SUBJECT, which for "I" means the learner's own
-//                 gender - hence the setting on the caregiver screen.
+// One entry per verb, holding every Hindi form the frames below need. The forms
+// are stored rather than derived because Hindi perfectives are not regular
+// enough to build from a root: खा -> खाया, but पी -> पिया and देख -> देखा.
 //
-// Note कल is both "yesterday" and "tomorrow"; the verb tense is what separates
-// them. That is real Hindi, and worth meeting early.
-const TEMPLATES = [
-  {
-    id: 'ate', use: 'eat', article: true, icon: '🍽️', agree: 'object',
-    en: 'I ate {obj} yesterday.',
-    hi: 'कल मैंने {obj} {v}।',
-    v: { 'm.sg': 'खाया', 'f.sg': 'खाई', 'm.pl': 'खाए', 'f.pl': 'खाईं' }
+//   perf   - perfective, used in the ergative past. Agrees with the OBJECT.
+//   imperf - habitual ("eats"). Agrees with the SUBJECT.
+//   prog   - continuous ("is eating"). Agrees with the SUBJECT.
+//   fut1   - first-person future.  fut3 - third-person future. Both subject.
+//
+// `skip` lists frames whose English is unnatural for that verb - nobody says
+// "I was seeing a dog".
+// ---------------------------------------------------------------------------
+const VERBS = {
+  eat: {
+    use: 'eat', icon: '🍽️', article: true,
+    en: { base: 'eat', s: 'eats', past: 'ate', ing: 'eating' },
+    hi: {
+      perf: { 'm.sg': 'खाया', 'f.sg': 'खाई', 'm.pl': 'खाए', 'f.pl': 'खाईं' },
+      imperf: { m: 'खाता', f: 'खाती' },
+      prog: { m: 'खा रहा', f: 'खा रही' },
+      fut1: { m: 'खाऊँगा', f: 'खाऊँगी' },
+      fut3: { m: 'खाएगा', f: 'खाएगी' }
+    }
   },
-  {
-    id: 'drank', use: 'drink', article: false, icon: '🥤', agree: 'object',
-    en: 'I drank {obj} yesterday.',
-    hi: 'कल मैंने {obj} {v}।',
-    v: { 'm.sg': 'पिया', 'f.sg': 'पी', 'm.pl': 'पिए', 'f.pl': 'पीं' }
+  drink: {
+    use: 'drink', icon: '🥤', article: false,
+    en: { base: 'drink', s: 'drinks', past: 'drank', ing: 'drinking' },
+    hi: {
+      perf: { 'm.sg': 'पिया', 'f.sg': 'पी', 'm.pl': 'पिए', 'f.pl': 'पीं' },
+      imperf: { m: 'पीता', f: 'पीती' },
+      prog: { m: 'पी रहा', f: 'पी रही' },
+      fut1: { m: 'पिऊँगा', f: 'पिऊँगी' },
+      fut3: { m: 'पिएगा', f: 'पिएगी' }
+    }
   },
-  {
-    id: 'saw', use: 'see', article: true, icon: '👀', agree: 'object',
-    en: 'I saw {obj} yesterday.',
-    hi: 'कल मैंने {obj} {v}।',
-    v: { 'm.sg': 'देखा', 'f.sg': 'देखी', 'm.pl': 'देखे', 'f.pl': 'देखीं' }
-  },
-  {
-    id: 'heSaw', use: 'see', article: true, icon: '👨👀', agree: 'object',
-    en: 'He saw {obj} yesterday.',
-    hi: 'कल उसने {obj} {v}।',
-    v: { 'm.sg': 'देखा', 'f.sg': 'देखी', 'm.pl': 'देखे', 'f.pl': 'देखीं' }
-  },
-  {
-    id: 'willEat', use: 'eat', article: true, icon: '🍽️⏩', agree: 'subject', subject: 'learner',
-    en: 'I will eat {obj} tomorrow.',
-    hi: 'कल मैं {obj} {v}।',
-    v: { 'm.sg': 'खाऊँगा', 'f.sg': 'खाऊँगी' }
-  },
-  {
-    id: 'willDrink', use: 'drink', article: false, icon: '🥤⏩', agree: 'subject', subject: 'learner',
-    en: 'I will drink {obj} tomorrow.',
-    hi: 'कल मैं {obj} {v}।',
-    v: { 'm.sg': 'पिऊँगा', 'f.sg': 'पिऊँगी' }
-  },
-  {
-    id: 'eating', use: 'eat', article: true, icon: '😋', agree: 'subject', subject: 'learner',
-    en: 'I am eating {obj}.',
-    hi: 'मैं {obj} {v}।',
-    v: { 'm.sg': 'खा रहा हूँ', 'f.sg': 'खा रही हूँ' }
-  },
-  {
-    id: 'heEats', use: 'eat', article: true, icon: '👨🍽️', agree: 'subject', subject: 'm',
-    en: 'He eats {obj}.',
-    hi: 'वह {obj} {v}।',
-    v: { 'm.sg': 'खाता है' }
-  },
-  {
-    id: 'sheEats', use: 'eat', article: true, icon: '👩🍽️', agree: 'subject', subject: 'f',
-    en: 'She eats {obj}.',
-    hi: 'वह {obj} {v}।',
-    v: { 'f.sg': 'खाती है' }
-  },
-  {
-    id: 'want', use: 'want', article: true, icon: '🤲',
-    en: 'I want {obj}.',
-    hi: 'मुझे {obj} चाहिए।'
-  },
-  {
-    // "I like a book" is wrong and "I like books" would need plural forms for
-    // every noun; "I like this book" is correct for countable and uncountable
-    // alike, and so is its Hindi.
-    id: 'like', use: 'like', article: false, icon: '❤️',
-    en: 'I like this {obj}.',
-    hi: 'मुझे यह {obj} पसंद है।',
-    enPl: 'I like these {obj}.',
-    hiPl: 'मुझे ये {obj} पसंद हैं।'
-  },
-  {
-    id: 'this', use: 'this', article: true, icon: '👉',
-    en: 'This is {obj}.',
-    hi: 'यह {obj} है।',
-    enPl: 'These are {obj}.',
-    hiPl: 'ये {obj} हैं।'
+  see: {
+    use: 'see', icon: '👀', article: true, skip: ['iProg', 'heProg'],
+    en: { base: 'see', s: 'sees', past: 'saw', ing: 'seeing' },
+    hi: {
+      perf: { 'm.sg': 'देखा', 'f.sg': 'देखी', 'm.pl': 'देखे', 'f.pl': 'देखीं' },
+      imperf: { m: 'देखता', f: 'देखती' },
+      prog: { m: 'देख रहा', f: 'देख रही' },
+      fut1: { m: 'देखूँगा', f: 'देखूँगी' },
+      fut3: { m: 'देखेगा', f: 'देखेगी' }
+    }
   }
+};
+
+// ---------------------------------------------------------------------------
+// Tense frames, applied to every verb above.
+//
+// `mark` and `sub` build the picture: subject glyph, verb glyph, tense glyph.
+// Three glyphs will not fit a choice tile on a narrow phone, so a frame that
+// needs all three is shown on cards but marked `quiz: false` and left out of
+// the recognition questions.
+// ---------------------------------------------------------------------------
+const FRAMES = [
+  { id: 'iPast', mark: '⏪',
+    en: (v, o) => `I ${v.en.past} ${o} yesterday.`,
+    hi: (v, o, m) => `कल मैंने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}।` },
+
+  { id: 'iPresent', mark: '',
+    en: (v, o) => `I ${v.en.base} ${o}.`,
+    hi: (v, o, m, g) => `मैं ${o} ${v.hi.imperf[g]} हूँ।` },
+
+  { id: 'iProg', mark: '▶️',
+    en: (v, o) => `I am ${v.en.ing} ${o}.`,
+    hi: (v, o, m, g) => `मैं ${o} ${v.hi.prog[g]} हूँ।` },
+
+  { id: 'iFuture', mark: '⏩',
+    en: (v, o) => `I will ${v.en.base} ${o} tomorrow.`,
+    hi: (v, o, m, g) => `कल मैं ${o} ${v.hi.fut1[g]}।` },
+
+  { id: 'iPastNeg', mark: '❌',
+    en: (v, o) => `I did not ${v.en.base} ${o}.`,
+    hi: (v, o, m) => `मैंने ${o} नहीं ${v.hi.perf[`${m.g}.${m.n}`]}।` },
+
+  { id: 'hePast', sub: '👨', mark: '⏪', quiz: false,
+    en: (v, o) => `He ${v.en.past} ${o} yesterday.`,
+    hi: (v, o, m) => `कल उसने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}।` },
+
+  { id: 'hePresent', sub: '👨',
+    en: (v, o) => `He ${v.en.s} ${o}.`,
+    hi: (v, o) => `वह ${o} ${v.hi.imperf.m} है।` },
+
+  { id: 'shePresent', sub: '👩',
+    en: (v, o) => `She ${v.en.s} ${o}.`,
+    hi: (v, o) => `वह ${o} ${v.hi.imperf.f} है।` },
+
+  { id: 'heProg', sub: '👨', mark: '▶️', quiz: false,
+    en: (v, o) => `He is ${v.en.ing} ${o}.`,
+    hi: (v, o) => `वह ${o} ${v.hi.prog.m} है।` }
 ];
 
+// Standalone sentences that are not built from a verb table.
+const TEMPLATES = [
+  { id: 'want', use: 'want', article: true, icon: '🤲',
+    en: 'I want {obj}.', hi: 'मुझे {obj} चाहिए।' },
+  { id: 'like', use: 'like', article: false, icon: '❤️',
+    en: 'I like this {obj}.', hi: 'मुझे यह {obj} पसंद है।',
+    enPl: 'I like these {obj}.', hiPl: 'मुझे ये {obj} पसंद हैं।' },
+  { id: 'this', use: 'this', article: true, icon: '👉',
+    en: 'This is {obj}.', hi: 'यह {obj} है।',
+    enPl: 'These are {obj}.', hiPl: 'ये {obj} हैं।' }
+];
+
+function objectPhrase(word, meta, wantArticle) {
+  return (wantArticle && meta.art ? `${meta.art} ` : '') + word.en;
+}
+
 /**
- * Build every sentence the templates and tagged nouns allow.
+ * Build every sentence the verbs, frames, templates and tagged nouns allow.
  * `words` are the WORDS entries, so the Hindi noun and the picture come
  * straight from the vocabulary rather than being repeated here.
  */
@@ -193,34 +213,54 @@ export function buildSentences(words, { learnerGender = 'm' } = {}) {
   const byId = new Map(words.map((w) => [w.id, w]));
   const out = [];
 
+  for (const [verbId, v] of Object.entries(VERBS)) {
+    for (const frame of FRAMES) {
+      if (v.skip && v.skip.includes(frame.id)) continue;
+
+      for (const [nounId, meta] of Object.entries(NOUNS)) {
+        if (!meta.use.includes(v.use)) continue;
+        const w = byId.get(nounId);
+        if (!w || !w.emoji) continue;
+
+        out.push({
+          id: `${frame.id}/${verbId}/${nounId}`,
+          en: frame.en(v, objectPhrase(w, meta, v.article)),
+          hi: frame.hi(v, w.hi, meta, learnerGender),
+          word: w,
+          template: `${frame.id}/${verbId}`,
+          icon: (frame.sub || '') + v.icon + (frame.mark || ''),
+          quizzable: frame.quiz !== false
+        });
+      }
+    }
+  }
+
   for (const t of TEMPLATES) {
-    for (const [id, meta] of Object.entries(NOUNS)) {
+    for (const [nounId, meta] of Object.entries(NOUNS)) {
       if (!meta.use.includes(t.use)) continue;
-      const w = byId.get(id);
+      const w = byId.get(nounId);
       if (!w || !w.emoji) continue;
 
       const plural = meta.n === 'pl';
       const enTpl = plural && t.enPl ? t.enPl : t.en;
       const hiTpl = plural && t.hiPl ? t.hiPl : t.hi;
 
-      const article = t.article && meta.art ? `${meta.art} ` : '';
-      const en = enTpl.replace('{obj}', article + w.en);
-      // Ergative past agrees with the object; future and present agree with
-      // the subject, which for "I" is the learner.
-      const subject = t.subject === 'learner' ? learnerGender : t.subject;
-      const key = t.agree === 'subject' ? `${subject}.sg` : `${meta.g}.${meta.n}`;
-      const verb = t.v ? t.v[key] : '';
-      if (t.v && !verb) continue; // no form for this combination: skip it
-
-      const hi = hiTpl.replace('{obj}', w.hi).replace('{v}', verb);
-
       out.push({
-        id: `${t.id}/${id}`, en, hi, word: w, template: t.id, icon: t.icon
+        id: `${t.id}/${nounId}`,
+        en: enTpl.replace('{obj}', objectPhrase(w, meta, t.article)),
+        hi: hiTpl.replace('{obj}', w.hi),
+        word: w,
+        template: t.id,
+        icon: t.icon,
+        quizzable: true
       });
     }
   }
+
   return out;
 }
 
+export const FRAME_COUNT = FRAMES.length;
+export const VERB_COUNT = Object.keys(VERBS).length;
 export const TEMPLATE_COUNT = TEMPLATES.length;
 export const TAGGED_NOUN_COUNT = Object.keys(NOUNS).length;
