@@ -148,6 +148,9 @@ Four things the generator has to get right that a naive join would not:
 - **तुम takes the plural perfective** even for one person: क्या तुम पार्क गए,
   never गया. Questions in the past are also the safest ones to teach, because
   the ergative means the listener's own gender never enters into it.
+- **The article is derived, not stored.** A noun only records whether it takes
+  one; whether it is "a" or "an" comes from the word, because storing "a" next
+  to "office" is a typo waiting to happen and was one.
 - **English and Hindi number disagree.** "pants", "glasses" and "scissors" are
   plural in English while पैंट, चश्मा and कैंची are singular, so nouns carry
   `enN` separately from `n` - one number for both gets one language wrong.

@@ -381,8 +381,18 @@ const TEMPLATES = [
     enPl: 'These are {obj}.', hiPl: 'ये {obj} हैं।' }
 ];
 
+/**
+ * The indefinite article, derived rather than stored.
+ *
+ * `art` only records WHETHER the noun takes one - an empty string means
+ * uncountable or plural ("rice", "shoes"). Which one it is comes from the word
+ * itself, because storing "a" next to "office" is a typo waiting to happen, and
+ * it was one. Nothing in this vocabulary is an exception to the vowel rule; a
+ * word like "hour" or "university" would need a stored override.
+ */
 function objectPhrase(word, meta, wantArticle) {
-  return (wantArticle && meta.art ? `${meta.art} ` : '') + word.en;
+  if (!wantArticle || !meta.art) return word.en;
+  return `${/^[aeiou]/i.test(word.en) ? 'an' : 'a'} ${word.en}`;
 }
 
 /** English number, which is not always the Hindi one ("pants" vs पैंट). */
