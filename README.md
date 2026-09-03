@@ -23,8 +23,10 @@ A start screen, then four choices. That is the entire interface.
 | **Read** | पढ़ो | Sees a written English word, taps the matching picture. |
 | **Say it** | बोलो | Useful everyday phrases, spoken in both languages. |
 | **Sentences** | वाक्य | Whole sentences - "I ate an apple yesterday" - with the picture and both languages. |
+| **Money** | पैसे | A shop transaction, step by step, with the change to work out. |
 
-Roughly 180 words across 12 topics, 30 phrases, and 2,159 generated sentences.
+Roughly 190 words across 12 topics, 30 phrases, and 2,159 generated sentences,
+plus endlessly generated shop transactions.
 
 ### The rules the interface follows
 
@@ -178,6 +180,39 @@ worth meeting early.
 corrupts every sentence built from that noun. `tools/review/genders.txt` lists
 each noun with a sentence whose verb ending reveals its tag; scanning that file
 is a five-minute job and fixing one is a single letter in `NOUNS`.
+
+---
+
+## Money
+
+Not arithmetic drill - a shop transaction walked through end to end, because
+that is where the arithmetic actually gets used:
+
+```
+टोपी छह रुपए की है।              The cap costs six rupees.
+मेरे पास दस रुपए हैं।             I have ten rupees.
+मैं दुकानदार को दस रुपए दूँगा।     I will give the shopkeeper ten rupees.
+कितने रुपए बचे?                  How many rupees are left?      10 − 6 = ?
+चार रुपए बचे। उनका क्या करोगे?     Four rupees are left. What will you do with them?
+मैं चार रुपए घर वापस लाऊँगा।       I will bring four rupees home.
+```
+
+Only one step asks for an answer; the rest are read and heard. The wrong
+options are near misses (one or two rupees out), never negative, so a mistake
+means a miscount rather than a wild guess. The closing "what will you do with
+them?" expects no answer - it is a cue for the person sitting alongside.
+
+The Hindi has three things to keep straight, and getting any of them wrong
+would teach the mistake:
+
+- रुपया is singular, रुपए plural: एक रुपया बचा, but चार रुपए बचे।
+- The price agrees with the item's gender: टोपी छह रुपए **की** है, but छाता नौ
+  रुपए **का** है।
+- दूँगा and लाऊँगा agree with the speaker, so they follow the learner setting.
+
+The highest price is set on the caregiver screen (₹5, ₹10, ₹20 or ₹50), which
+is the difficulty dial. Number words now run to twenty in the vocabulary too,
+so they can be met in Words and Listen before they turn up as change.
 
 ---
 
@@ -347,6 +382,7 @@ index.html            app shell
 css/app.css           all styling
 js/data.js            vocabulary and phrases (hand-written)
 js/sentences.js       sentence templates and noun grammar tags
+js/money.js           shop transactions and Hindi number words
 js/generated.js       approved model-drafted content, compiled by merge.py
 js/app.js             screens, quiz logic, the caregiver corner code
 js/speech.js          text-to-speech and the sound effects

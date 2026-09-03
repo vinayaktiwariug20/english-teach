@@ -478,6 +478,18 @@ export function buildSentences(words, { learnerGender = 'm' } = {}) {
   return out;
 }
 
+/** Vocabulary entries that can be bought, with their grammar tags. */
+export function shoppableNouns(words) {
+  const byId = new Map(words.map((w) => [w.id, w]));
+  const out = [];
+  for (const [id, meta] of Object.entries(NOUNS)) {
+    if (!meta.use.includes('buy') || meta.n !== 'sg') continue;
+    const word = byId.get(id);
+    if (word && word.emoji) out.push({ word, meta });
+  }
+  return out;
+}
+
 export const FRAME_COUNT = FRAMES.length;
 export const VERB_COUNT = Object.keys(VERBS).length + Object.keys(MOTION).length;
 export const TEMPLATE_COUNT = TEMPLATES.length;

@@ -1,5 +1,6 @@
 import { CATEGORIES, WORDS, PHRASES, READING_WORDS } from './data.js';
-import { buildSentences } from './sentences.js';
+import { buildSentences, shoppableNouns } from './sentences.js';
+import { buildTransaction, changeOptions, hindiNumber } from './money.js';
 import * as sp from './speech.js';
 import * as store from './store.js';
 
@@ -106,6 +107,8 @@ const state = {
   choices: [],
   recent: [],
   stars: 0,
+  shop: null,
+  shopStep: 0,
   sentSeen: [],
   sentQuiz: null,
   locked: false,
@@ -267,7 +270,8 @@ const MODES = [
   { id: 'listen',  cls: 't-listen',  icon: '👂', hi: 'सुनो',    en: 'Listen' },
   { id: 'read',    cls: 't-read',    icon: '🔤', hi: 'पढ़ो',    en: 'Read' },
   { id: 'phrases', cls: 't-phrases', icon: '💬', hi: 'बोलो',    en: 'Say it' },
-  { id: 'sentences', cls: 't-sentences', icon: '🗣️', hi: 'वाक्य', en: 'Sentences' }
+  { id: 'sentences', cls: 't-sentences', icon: '🗣️', hi: 'वाक्य', en: 'Sentences' },
+  { id: 'money', cls: 't-money', icon: '💰', hi: 'पैसे', en: 'Money' }
 ];
 
 function screenHome() {
@@ -281,6 +285,7 @@ function screenHome() {
           if (m.id === 'words') go('cats');
           else if (m.id === 'phrases') startPhrases();
           else if (m.id === 'sentences') startSentences();
+          else if (m.id === 'money') startMoney();
           else startQuiz(m.id);
         }
       },
@@ -350,6 +355,116 @@ function startSentences() {
     buildSentences(activeWords(), { learnerGender: store.settings().learnerGender })
   );
   go('sentences', { deck, deckIndex: 0, sentSeen: [], sentQuiz: null });
+}
+
+// --- money -----------------------------------------------------------------
+
+function makeTransaction() {
+  const s = store.settings();
+  return buildTransaction(shoppableNouns(activeWords()), {
+    maxPrice: s.moneyMax,
+    learnerGender: s.learnerGender
+  });
+}
+
+function startMoney() {
+  // Build first, navigate second. Going to the screen with no transaction in
+  // hand makes the render fall straight back into here.
+  go('money', { shop: makeTransaction(), shopStep: 0 });
+}
+
+function nextTransaction() {
+  state.shop = makeTransaction();
+  state.shopStep = 0;
+  state.locked = false;
+  render();
+}
+
+function coins(n) {
+  // The number is the lesson, so it is shown as a numeral and a Hindi word
+  // rather than as a row of coins that would have to be counted twice.
+  return el('div', { class: 'price' },
+    el('span', { class: 'rupee', text: '₹' }),
+    el('span', { class: 'amount', text: String(n) }),
+    el('span', { class: 'amount-hi hi', text: hindiNumber(n) })
+  );
+}
+
+function screenMoney() {
+  const t = state.shop;
+  if (!t) return screenHome(); // never expected; better than a blank screen
+  const step = t.steps[state.shopStep];
+
+  if (store.settings().autoSpeak) setTimeout(() => sayEn(step.en), 320);
+
+  if (step.kind === 'ask') {
+    // A compact prompt, not the full card: the sum and the answer buttons need
+    // the room, and the item has already been shown on the steps before this.
+    const prompt = el('div', { class: 'prompt money-ask', onclick: () => sayEn(step.en) },
+      el('div', {},
+        el('div', { class: 'ask-en', text: step.en }),
+        el('div', { class: 'ask-hi hi', text: step.hi })
+      )
+    );
+    const grid = el('div', { class: 'choices n3 num-choices' });
+    for (const value of changeOptions(t.change, t.paid, Math.min(store.choiceCount(), 3))) {
+      const btn = el('button', { class: 'choice' }, coins(value));
+      btn.addEventListener('click', () => {
+        if (state.locked) return;
+        if (value === t.change) {
+          state.locked = true;
+          store.noteAnswer(`money/${t.paid}-${t.price}`, true);
+          btn.classList.add('right');
+          sp.chimeCorrect();
+          const full = awardStar();
+          setTimeout(() => {
+            const msg = praise();
+            if (full) sp.chimeCelebrate();
+            overlay(full ? '🎉' : '✅', full ? 'बहुत बढ़िया!' : msg, full ? 1900 : 1200);
+            setTimeout(() => {
+              state.locked = false;
+              state.shopStep += 1;
+              render();
+            }, full ? 1900 : 1200);
+          }, 260);
+        } else {
+          store.noteAnswer(`money/${t.paid}-${t.price}`, false);
+          btn.classList.add('wrong');
+          sp.chimeRetry();
+          setTimeout(() => btn.classList.remove('wrong'), 450);
+          setTimeout(() => sayEn(step.en), 520);
+        }
+      });
+      grid.append(btn);
+    }
+
+    const sum = el('div', { class: 'sum', text: `${t.paid} − ${t.price} = ?` });
+    return el('div', { class: 'screen' }, topBar(), prompt, sum, grid);
+  }
+
+  const card = el('div', { class: 'card money-card', onclick: () => sayEn(step.en) },
+    el('div', { class: 'shop-item' },
+      pictureNode(t.word, 'pic'),
+      step.amount !== undefined ? coins(step.amount) : null
+    ),
+    el('div', { class: 'word-en phrase', text: step.en }),
+    el('div', { class: 'word-hi hi phrase', text: step.hi })
+  );
+
+  const actions = el('div', { class: 'actions' },
+    el('button', { class: 'act act-hear', onclick: () => sayEn(step.en) },
+      el('span', { class: 'ico emoji', text: '🔊' })),
+    el('button', { class: 'act act-hindi', onclick: () => sayHi(step.hi) }, 'हिंदी'),
+    el('button', {
+      class: 'act act-next',
+      onclick: () => {
+        if (state.shopStep >= t.steps.length - 1) nextTransaction();
+        else { state.shopStep += 1; render(); }
+      }
+    }, el('span', { class: 'arrow', text: '→' }))
+  );
+
+  return el('div', { class: 'screen' }, topBar(), card, actions);
 }
 
 /** A sentence shown as pictures: the verb, then what it acts on. */
@@ -723,10 +838,19 @@ function screenAdmin() {
     store.setSetting('choices', v === 'auto' ? 'auto' : Number(v));
   });
 
+  const moneySelect = el('select', {});
+  for (const [val, label] of [['5', 'Up to ₹5'], ['10', 'Up to ₹10'], ['20', 'Up to ₹20'], ['50', 'Up to ₹50']]) {
+    const opt = el('option', { value: val, text: label });
+    if (String(s.moneyMax) === val) opt.selected = true;
+    moneySelect.append(opt);
+  }
+  moneySelect.addEventListener('change', () => store.setSetting('moneyMax', Number(moneySelect.value)));
+
   wrap.append(
     el('h2', { text: 'Difficulty' }),
     el('div', { class: 'panel' },
       row('Answer choices', choiceSelect),
+      row('Highest price in Money', moneySelect),
       el('div', { class: 'note' },
         'Automatic starts at 2 pictures and only widens to 3 or 4 once the learner ' +
         'is answering most questions correctly.'
@@ -850,6 +974,7 @@ function render() {
     case 'sentences':
       node = state.sentQuiz ? screenSentenceQuiz() : screenCard('sentence');
       break;
+    case 'money':     node = screenMoney(); break;
     case 'listen':  node = screenQuiz('listen'); break;
     case 'read':    node = screenQuiz('read'); break;
     case 'admin':   node = screenAdmin(); break;

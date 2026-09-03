@@ -211,9 +211,9 @@ button {
 .t-read    { background: var(--plum); }
 .t-phrases { background: var(--rose); }
 .t-sentences { background: var(--teal-dark); }
+.t-money { background: #8a5a2b; }
 
-/* Five tiles in a two-column grid: the last one spans the full width rather
-   than leaving a hole beside it. */
+/* An odd number of tiles would leave a hole, so the last one spans instead. */
 .tiles .tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 /* Invisible caregiver corners. No hover, no cursor, no visual trace: a stray
@@ -359,6 +359,54 @@ button {
 .card .sent-pic .verb         { font-size: min(clamp(32px, 11vh, 96px), 16vw); }
 .choice .sent-pic .verb       { font-size: min(clamp(18px, 5.5vh, 52px), 7vw); }
 .choices.n3 .sent-pic .verb   { font-size: min(clamp(14px, 4vh, 36px), 4.6vw); }
+
+.shop-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 3vw, 32px);
+}
+
+.price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.price .rupee { font-size: clamp(16px, 2.4vh, 26px); color: var(--ink-soft); }
+.price .amount { font-size: min(clamp(44px, 12vh, 110px), 20vw); font-weight: 800; color: var(--teal-dark); }
+.price .amount-hi { font-size: clamp(15px, 2.2vh, 24px); color: var(--ink-soft); margin-top: 4px; }
+
+/* The arithmetic, shown plainly above the choices. */
+.sum {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: clamp(26px, 4.6vh, 48px);
+  font-weight: 800;
+  color: var(--ink-soft);
+  letter-spacing: 2px;
+}
+
+.money-ask { flex: 0 0 auto; padding: clamp(10px, 2vh, 20px); }
+.money-ask .ask-en {
+  font-size: clamp(20px, 3.4vh, 36px);
+  font-weight: 800;
+  text-align: center;
+}
+.money-ask .ask-hi {
+  font-size: clamp(17px, 2.8vh, 30px);
+  color: var(--teal-dark);
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* The item picture shares the card with two lines of text, so it cannot claim
+   the same height it does on a plain word card. */
+.money-card .pic { font-size: min(clamp(48px, 14vh, 130px), 26vw); }
+
+.num-choices .price .amount { font-size: min(clamp(34px, 9vh, 76px), 14vw); }
+.num-choices .price .amount-hi { font-size: clamp(13px, 1.8vh, 20px); }
 
 .card .example {
   margin-top: clamp(4px, 1.4vh, 14px);

@@ -227,7 +227,17 @@ const BASE_WORDS = [
   { cat: 'numbers', en: 'seven', hi: 'सात',  num: '7' },
   { cat: 'numbers', en: 'eight', hi: 'आठ',   num: '8' },
   { cat: 'numbers', en: 'nine',  hi: 'नौ',   num: '9' },
-  { cat: 'numbers', en: 'ten',   hi: 'दस',   num: '10' }
+  { cat: 'numbers', en: 'ten',       hi: 'दस',      num: '10' },
+  { cat: 'numbers', en: 'eleven',    hi: 'ग्यारह',   num: '11' },
+  { cat: 'numbers', en: 'twelve',    hi: 'बारह',    num: '12' },
+  { cat: 'numbers', en: 'thirteen',  hi: 'तेरह',     num: '13' },
+  { cat: 'numbers', en: 'fourteen',  hi: 'चौदह',    num: '14' },
+  { cat: 'numbers', en: 'fifteen',   hi: 'पंद्रह',    num: '15' },
+  { cat: 'numbers', en: 'sixteen',   hi: 'सोलह',    num: '16' },
+  { cat: 'numbers', en: 'seventeen', hi: 'सत्रह',    num: '17' },
+  { cat: 'numbers', en: 'eighteen',  hi: 'अठारह',   num: '18' },
+  { cat: 'numbers', en: 'nineteen',  hi: 'उन्नीस',   num: '19' },
+  { cat: 'numbers', en: 'twenty',    hi: 'बीस',     num: '20' }
 ];
 
 const BASE_PHRASES = [
