@@ -1,66 +1,108 @@
 # Gender check for the sentence generator.
 #
-# Hindi perfective verbs agree with the OBJECT. If a gender tag in
-# js/sentences.js is wrong, every sentence built from that noun is wrong.
-# Scan the Hindi column; the verb ending is what reveals the tag.
-# Anything wrong, say which word - the fix is one letter in NOUNS.
+# Hindi perfective verbs agree with the OBJECT, so a wrong gender tag in
+# js/sentences.js corrupts every sentence built from that noun. Scan the
+# Hindi column - the verb ending reveals the tag. Say which word is wrong
+# and the fix is one letter.
 
-food/apple          कल मैंने सेब खाया।               I ate an apple yesterday.
-food/banana         कल मैंने केला खाया।              I ate a banana yesterday.
-food/mango          कल मैंने आम खाया।                I ate a mango yesterday.
-food/orange         कल मैंने संतरा खाया।             I ate an orange yesterday.
-food/grapes         कल मैंने अंगूर खाए।              I ate grapes yesterday.
-food/rice           कल मैंने चावल खाया।              I ate rice yesterday.
-food/bread          कल मैंने ब्रेड खाई।              I ate bread yesterday.
-food/egg            कल मैंने अंडा खाया।              I ate an egg yesterday.
-food/potato         कल मैंने आलू खाया।               I ate a potato yesterday.
-food/tomato         कल मैंने टमाटर खाया।             I ate a tomato yesterday.
-food/onion          कल मैंने प्याज़ खाया।            I ate an onion yesterday.
-food/carrot         कल मैंने गाजर खाई।               I ate a carrot yesterday.
-food/fish           कल मैंने मछली खाई।               I ate a fish yesterday.
-food/biscuit        कल मैंने बिस्कुट खाया।           I ate a biscuit yesterday.
-food/cake           कल मैंने केक खाया।               I ate a cake yesterday.
-food/ice cream      कल मैंने आइसक्रीम खाई।           I ate ice cream yesterday.
-food/honey          कल मैंने शहद खाया।               I ate honey yesterday.
-food/corn           कल मैंने मक्का खाया।             I ate corn yesterday.
-food/milk           कल मैंने दूध पिया।               I drank milk yesterday.
-food/water          कल मैंने पानी पिया।              I drank water yesterday.
-food/tea            कल मैंने चाय पी।                 I drank tea yesterday.
-animals/dog         कल मैंने कुत्ता देखा।            I saw a dog yesterday.
-animals/cat         कल मैंने बिल्ली देखी।            I saw a cat yesterday.
-animals/cow         कल मैंने गाय देखी।               I saw a cow yesterday.
-animals/horse       कल मैंने घोड़ा देखा।             I saw a horse yesterday.
-animals/elephant    कल मैंने हाथी देखा।              I saw an elephant yesterday.
-animals/monkey      कल मैंने बंदर देखा।              I saw a monkey yesterday.
-animals/bird        कल मैंने चिड़िया देखी।           I saw a bird yesterday.
-animals/lion        कल मैंने शेर देखा।               I saw a lion yesterday.
-animals/tiger       कल मैंने बाघ देखा।               I saw a tiger yesterday.
-animals/goat        कल मैंने बकरी देखी।              I saw a goat yesterday.
-animals/mouse       कल मैंने चूहा देखा।              I saw a mouse yesterday.
-animals/snake       कल मैंने साँप देखा।              I saw a snake yesterday.
-animals/butterfly   कल मैंने तितली देखी।             I saw a butterfly yesterday.
-animals/frog        कल मैंने मेंढक देखा।             I saw a frog yesterday.
-animals/rabbit      कल मैंने खरगोश देखा।             I saw a rabbit yesterday.
-animals/duck        कल मैंने बत्तख देखी।             I saw a duck yesterday.
-animals/sheep       कल मैंने भेड़ देखी।              I saw a sheep yesterday.
-animals/hen         कल मैंने मुर्गी देखी।            I saw a hen yesterday.
-animals/turtle      कल मैंने कछुआ देखा।              I saw a turtle yesterday.
-animals/camel       कल मैंने ऊँट देखा।               I saw a camel yesterday.
-home/house          कल मैंने घर देखा।                I saw a house yesterday.
-home/door           कल मैंने दरवाज़ा देखा।           I saw a door yesterday.
-home/window         कल मैंने खिड़की देखी।            I saw a window yesterday.
-home/bed            कल मैंने बिस्तर देखा।            I saw a bed yesterday.
-home/chair          कल मैंने कुर्सी देखी।            I saw a chair yesterday.
-home/key            कल मैंने चाबी देखी।              I saw a key yesterday.
-home/book           कल मैंने किताब देखी।             I saw a book yesterday.
-home/pen            कल मैंने कलम देखी।               I saw a pen yesterday.
-home/bag            कल मैंने बैग देखा।               I saw a bag yesterday.
-home/phone          कल मैंने फ़ोन देखा।              I saw a phone yesterday.
-home/ball           कल मैंने गेंद देखी।              I saw a ball yesterday.
-home/umbrella       कल मैंने छाता देखा।              I saw an umbrella yesterday.
-travel/car          कल मैंने गाड़ी देखी।             I saw a car yesterday.
-travel/bus          कल मैंने बस देखी।                I saw a bus yesterday.
-travel/train        कल मैंने रेलगाड़ी देखी।          I saw a train yesterday.
-travel/bicycle      कल मैंने साइकिल देखी।            I saw a bicycle yesterday.
-travel/boat         कल मैंने नाव देखी।               I saw a boat yesterday.
-travel/truck        कल मैंने ट्रक देखा।              I saw a truck yesterday.
+food/apple          कल मैंने सेब खाया।                 I ate an apple yesterday.
+food/banana         कल मैंने केला खाया।                I ate a banana yesterday.
+food/mango          कल मैंने आम खाया।                  I ate a mango yesterday.
+food/orange         कल मैंने संतरा खाया।               I ate an orange yesterday.
+food/grapes         कल मैंने अंगूर खाए।                I ate grapes yesterday.
+food/rice           कल मैंने चावल खाया।                I ate rice yesterday.
+food/bread          कल मैंने ब्रेड खाई।                I ate bread yesterday.
+food/egg            कल मैंने अंडा खाया।                I ate an egg yesterday.
+food/potato         कल मैंने आलू खाया।                 I ate a potato yesterday.
+food/tomato         कल मैंने टमाटर खाया।               I ate a tomato yesterday.
+food/onion          कल मैंने प्याज़ खाया।              I ate an onion yesterday.
+food/carrot         कल मैंने गाजर खाई।                 I ate a carrot yesterday.
+food/fish           कल मैंने मछली खाई।                 I ate a fish yesterday.
+food/biscuit        कल मैंने बिस्कुट खाया।             I ate a biscuit yesterday.
+food/cake           कल मैंने केक खाया।                 I ate a cake yesterday.
+food/ice cream      कल मैंने आइसक्रीम खाई।             I ate ice cream yesterday.
+food/honey          कल मैंने शहद खाया।                 I ate honey yesterday.
+food/corn           कल मैंने मक्का खाया।               I ate corn yesterday.
+food/milk           कल मैंने दूध पिया।                 I drank milk yesterday.
+food/water          कल मैंने पानी पिया।                I drank water yesterday.
+food/tea            कल मैंने चाय पी।                   I drank tea yesterday.
+animals/dog         कल मैंने कुत्ता देखा।              I saw a dog yesterday.
+animals/cat         कल मैंने बिल्ली देखी।              I saw a cat yesterday.
+animals/cow         कल मैंने गाय देखी।                 I saw a cow yesterday.
+animals/horse       कल मैंने घोड़ा देखा।               I saw a horse yesterday.
+animals/elephant    कल मैंने हाथी देखा।                I saw an elephant yesterday.
+animals/monkey      कल मैंने बंदर देखा।                I saw a monkey yesterday.
+animals/bird        कल मैंने चिड़िया देखी।             I saw a bird yesterday.
+animals/lion        कल मैंने शेर देखा।                 I saw a lion yesterday.
+animals/tiger       कल मैंने बाघ देखा।                 I saw a tiger yesterday.
+animals/goat        कल मैंने बकरी देखी।                I saw a goat yesterday.
+animals/mouse       कल मैंने चूहा देखा।                I saw a mouse yesterday.
+animals/snake       कल मैंने साँप देखा।                I saw a snake yesterday.
+animals/butterfly   कल मैंने तितली देखी।               I saw a butterfly yesterday.
+animals/frog        कल मैंने मेंढक देखा।               I saw a frog yesterday.
+animals/rabbit      कल मैंने खरगोश देखा।               I saw a rabbit yesterday.
+animals/duck        कल मैंने बत्तख देखी।               I saw a duck yesterday.
+animals/sheep       कल मैंने भेड़ देखी।                I saw a sheep yesterday.
+animals/hen         कल मैंने मुर्गी देखी।              I saw a hen yesterday.
+animals/turtle      कल मैंने कछुआ देखा।                I saw a turtle yesterday.
+animals/camel       कल मैंने ऊँट देखा।                 I saw a camel yesterday.
+home/house          कल मैंने घर देखा।                  I saw a house yesterday.
+home/door           कल मैंने दरवाज़ा देखा।             I saw a door yesterday.
+home/window         कल मैंने खिड़की देखी।              I saw a window yesterday.
+home/bed            कल मैंने बिस्तर देखा।              I saw a bed yesterday.
+home/chair          कल मैंने कुर्सी देखी।              I saw a chair yesterday.
+home/key            कल मैंने चाबी देखी।                I saw a key yesterday.
+home/book           कल मैंने किताब देखी।               I saw a book yesterday.
+home/pen            कल मैंने कलम देखी।                 I saw a pen yesterday.
+home/bag            कल मैंने बैग देखा।                 I saw a bag yesterday.
+home/phone          कल मैंने फ़ोन देखा।                I saw a phone yesterday.
+home/ball           कल मैंने गेंद देखी।                I saw a ball yesterday.
+home/umbrella       कल मैंने छाता देखा।                I saw an umbrella yesterday.
+home/plate          कल मैंने प्लेट देखी।               I saw a plate yesterday.
+home/cup            कल मैंने कप देखा।                  I saw a cup yesterday.
+home/spoon          कल मैंने चम्मच देखा।               I saw a spoon yesterday.
+home/knife          कल मैंने चाकू देखा।                I saw a knife yesterday.
+home/box            कल मैंने डिब्बा देखा।              I saw a box yesterday.
+home/bucket         कल मैंने बाल्टी देखी।              I saw a bucket yesterday.
+home/soap           कल मैंने साबुन देखा।               I saw soap yesterday.
+home/toothbrush     कल मैंने टूथब्रश देखा।             I saw a toothbrush yesterday.
+home/clock          कल मैंने घड़ी देखी।                I saw a clock yesterday.
+home/mirror         कल मैंने आईना देखा।                I saw a mirror yesterday.
+home/scissors       कल मैंने कैंची देखी।               I saw scissors yesterday.
+home/candle         कल मैंने मोमबत्ती देखी।            I saw a candle yesterday.
+places/school       कल मैंने स्कूल देखा।               I saw a school yesterday.
+places/market       कल मैंने बाज़ार देखा।              I saw a market yesterday.
+places/shop         कल मैंने दुकान देखी।               I saw a shop yesterday.
+places/hospital     कल मैंने अस्पताल देखा।             I saw a hospital yesterday.
+places/temple       कल मैंने मंदिर देखा।               I saw a temple yesterday.
+places/park         कल मैंने पार्क देखा।               I saw a park yesterday.
+places/station      कल मैंने स्टेशन देखा।              I saw a station yesterday.
+places/office       कल मैंने दफ़्तर देखा।              I saw a office yesterday.
+travel/car          कल मैंने गाड़ी देखी।               I saw a car yesterday.
+travel/bus          कल मैंने बस देखी।                  I saw a bus yesterday.
+travel/train        कल मैंने रेलगाड़ी देखी।            I saw a train yesterday.
+travel/bicycle      कल मैंने साइकिल देखी।              I saw a bicycle yesterday.
+travel/boat         कल मैंने नाव देखी।                 I saw a boat yesterday.
+travel/truck        कल मैंने ट्रक देखा।                I saw a truck yesterday.
+clothes/shirt       कल मैंने कमीज़ पहनी।               I wore a shirt yesterday.
+clothes/pants       कल मैंने पैंट पहनी।                I wore pants yesterday.
+clothes/shoes       कल मैंने जूते पहने।                I wore shoes yesterday.
+clothes/socks       कल मैंने मोज़े पहने।               I wore socks yesterday.
+clothes/cap         कल मैंने टोपी पहनी।                I wore a cap yesterday.
+clothes/dress       कल मैंने फ़्रॉक पहनी।              I wore a dress yesterday.
+clothes/glasses     कल मैंने चश्मा पहना।               I wore glasses yesterday.
+clothes/watch       कल मैंने घड़ी पहनी।                I wore a watch yesterday.
+clothes/coat        कल मैंने कोट पहना।                 I wore a coat yesterday.
+clothes/gloves      कल मैंने दस्ताने पहने।             I wore gloves yesterday.
+clothes/ring        कल मैंने अंगूठी पहनी।              I wore a ring yesterday.
+clothes/sari        कल मैंने साड़ी पहनी।               I wore a sari yesterday.
+
+# Places (motion verbs agree with the subject, so these only check the noun):
+places/school       कल मैं स्कूल गया।                  I went to school yesterday.
+places/market       कल मैं बाज़ार गया।                 I went to the market yesterday.
+places/shop         कल मैं दुकान गया।                  I went to the shop yesterday.
+places/hospital     कल मैं अस्पताल गया।                I went to the hospital yesterday.
+places/temple       कल मैं मंदिर गया।                  I went to the temple yesterday.
+places/park         कल मैं पार्क गया।                  I went to the park yesterday.
+places/station      कल मैं स्टेशन गया।                 I went to the station yesterday.
+places/office       कल मैं दफ़्तर गया।                 I went to the office yesterday.

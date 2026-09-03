@@ -17,6 +17,7 @@ export const CATEGORIES = [
   { id: 'nature',  en: 'Nature',  hi: 'प्रकृति', emoji: '🌳' },
   { id: 'people',  en: 'People',  hi: 'लोग',     emoji: '👨' },
   { id: 'travel',  en: 'Travel',  hi: 'सफ़र',    emoji: '🚌' },
+  { id: 'places',  en: 'Places',  hi: 'जगहें',   emoji: '🏫' },
   { id: 'actions', en: 'Actions', hi: 'काम',     emoji: '🏃' },
   { id: 'colors',  en: 'Colors',  hi: 'रंग',     emoji: '🎨' },
   { id: 'numbers', en: 'Numbers', hi: 'गिनती',   emoji: '🔢' }
@@ -174,6 +175,16 @@ const BASE_WORDS = [
   { cat: 'travel', en: 'ambulance',  hi: 'एम्बुलेंस',  emoji: '🚑' },
   { cat: 'travel', en: 'road',       hi: 'सड़क',       emoji: '🛣️' },
   { cat: 'travel', en: 'bridge',     hi: 'पुल',        emoji: '🌉' },
+
+  // ---- places ----
+  { cat: 'places', en: 'school',   hi: 'स्कूल',    emoji: '🏫' },
+  { cat: 'places', en: 'market',   hi: 'बाज़ार',   emoji: '🛒' },
+  { cat: 'places', en: 'shop',     hi: 'दुकान',    emoji: '🏪' },
+  { cat: 'places', en: 'hospital', hi: 'अस्पताल',  emoji: '🏥' },
+  { cat: 'places', en: 'temple',   hi: 'मंदिर',    emoji: '🛕' },
+  { cat: 'places', en: 'park',     hi: 'पार्क',    emoji: '⛲' },
+  { cat: 'places', en: 'station',  hi: 'स्टेशन',   emoji: '🚉' },
+  { cat: 'places', en: 'office',   hi: 'दफ़्तर',   emoji: '🏢' },
 
   // ---- actions ----
   { cat: 'actions', en: 'eat',    hi: 'खाना',       emoji: '🍽️' },

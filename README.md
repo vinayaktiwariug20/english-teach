@@ -24,7 +24,7 @@ A start screen, then four choices. That is the entire interface.
 | **Say it** | बोलो | Useful everyday phrases, spoken in both languages. |
 | **Sentences** | वाक्य | Whole sentences - "I ate an apple yesterday" - with the picture and both languages. |
 
-Roughly 175 words across 11 topics, 30 phrases, and 576 generated sentences.
+Roughly 180 words across 12 topics, 30 phrases, and 2,159 generated sentences.
 
 ### The rules the interface follows
 
@@ -116,50 +116,52 @@ nothing to tap out of.
 
 Words alone do not get anyone to "I ate an apple yesterday". That mode is built
 from verbs crossed with tense frames over grammar-tagged nouns, in
-`js/sentences.js`. Three verbs x nine frames x 59 tagged nouns, plus three
-standalone templates, give 576 sentences. Adding one verb adds about 180 more;
-adding one frame adds about 60.
+`js/sentences.js`. Ten verbs, eleven frames and ninety-one tagged nouns, plus
+four standalone templates, give 2,159 sentences. Adding a verb costs five sets
+of Hindi forms and some noun tags; adding a frame costs one function.
 
-The frames cover simple past, simple present, present continuous, future and
-negative past for "I", and past, present and continuous for "he" and "she":
-
-```
-कल मैंने सेब खाया।        I ate an apple yesterday.
-मैं सेब खाता हूँ।          I eat an apple.
-मैं सेब खा रहा हूँ।        I am eating an apple.
-कल मैं सेब खाऊँगा।        I will eat an apple tomorrow.
-मैंने सेब नहीं खाया।       I did not eat an apple.
-वह सेब खाती है।          She eats an apple.
-```
-
-Each verb stores its Hindi forms explicitly rather than deriving them from a
-root, because the perfectives are not regular enough: खा becomes खाया, but पी
-becomes पिया and देख becomes देखा. A verb can also skip frames whose English is
-unnatural for it - nobody says "I was seeing a dog".
-
-They are generated rather than written out because Hindi will not let you
-concatenate. A past-tense transitive sentence takes the ergative ने, and the
-verb agrees with the gender and number of the **object**:
+Verbs: eat, drink, see, wear, wash, buy, open, close, and the two motion verbs
+go and come. Frames cover simple past, simple present, present continuous,
+future and negative past for "I"; past, present and continuous for "he" and
+"she"; and questions addressed to "you".
 
 ```
-कल मैंने सेब खाया।     I ate an apple yesterday.    (सेब   m sg)
-कल मैंने ब्रेड खाई।     I ate bread yesterday.       (ब्रेड  f sg)
-कल मैंने अंगूर खाए।     I ate grapes yesterday.      (अंगूर m pl)
-कल मैंने चाय पी।       I drank tea yesterday.       (चाय  f sg)
+कल मैंने सेब खाया।            I ate an apple yesterday.
+मैं सेब खाता हूँ।              I eat an apple.
+मैं सेब खा रहा हूँ।            I am eating an apple.
+कल मैं सेब खाऊँगा।            I will eat an apple tomorrow.
+मैंने सेब नहीं खाया।           I did not eat an apple.
+वह सेब खाती है।              She eats an apple.
+क्या तुमने सेब खाया?           Did you eat an apple?
+कल मैं बाज़ार गया।            I went to the market yesterday.
+क्या तुम पार्क गए?            Did you go to the park?
 ```
 
-So every noun carries a gender, a number and its English article, and every
-past-tense template carries all four verb forms. English needs the same care in
-the other direction - articles and countability - which is why the templates
-distinguish "I want a book" from "I want water", and "This is an elephant" from
-"These are grapes".
+Four things the generator has to get right that a naive join would not:
+
+- **Perfectives are irregular**, so each verb stores its forms rather than
+  deriving them: खा becomes खाया, पी becomes पिया, and बंद करना inflects on its
+  करना half (बंद किया).
+- **Transitive and intransitive past differ.** A transitive past takes ergative
+  ने and agrees with the object; an intransitive one has no ने and agrees with
+  the subject. मैंने सेब खाया, but मैं बाज़ार गया.
+- **तुम takes the plural perfective** even for one person: क्या तुम पार्क गए,
+  never गया. Questions in the past are also the safest ones to teach, because
+  the ergative means the listener's own gender never enters into it.
+- **English and Hindi number disagree.** "pants", "glasses" and "scissors" are
+  plural in English while पैंट, चश्मा and कैंची are singular, so nouns carry
+  `enN` separately from `n` - one number for both gets one language wrong.
+
+A verb can skip frames whose English is unnatural for it: nobody says "I was
+seeing a dog".
 
 Every fourth card is a recognition question: the sentence is spoken and the
 learner taps the right picture. Sentences are shown as picture pairs - the verb, then what it
 acts on, with a tense mark where there is room: 🍽️⏪ for "I ate", 🍽️⏩ for "I
-will eat", 🍽️❌ for "I did not eat", 👩🍽️ for "She eats". Nothing has to be read.
-A frame needing all three glyphs (👨🍽️⏪) will not fit a choice tile, so it is
-taught on cards and left out of the questions. Choices are drawn from the four sentences just shown, and never
+will eat", 🍽️❌ for "I did not eat", 🧼❓ for "Did you wash", 👩🍽️ for "She eats",
+🚶⏪ for "I went". Nothing has to be read. A frame needing all three glyphs
+(👨🍽️⏪) will not fit a choice tile, so it is taught on cards and left out of
+the questions. Choices are drawn from the four sentences just shown, and never
 share a picture pair, so the answer is always decidable.
 
 Two tenses agree with the **subject** rather than the object, which means the

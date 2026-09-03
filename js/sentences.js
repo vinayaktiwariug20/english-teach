@@ -21,29 +21,29 @@
 // id -> { g: 'm'|'f', n: 'sg'|'pl', art: 'a'|'an'|'', use: [...] }
 const NOUNS = {
   // ---- food: things you eat -------------------------------------------
-  'food/apple':     { g: 'm', n: 'sg', art: 'an', use: ['eat', 'want', 'like', 'this'] },
-  'food/banana':    { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this'] },
-  'food/mango':     { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this'] },
-  'food/orange':    { g: 'm', n: 'sg', art: 'an', use: ['eat', 'want', 'like', 'this'] },
-  'food/grapes':    { g: 'm', n: 'pl', art: '',   use: ['eat', 'want', 'like', 'this'] },
-  'food/rice':      { g: 'm', n: 'sg', art: '',   use: ['eat', 'want', 'like'] },
-  'food/bread':     { g: 'f', n: 'sg', art: '',   use: ['eat', 'want', 'like'] },
-  'food/egg':       { g: 'm', n: 'sg', art: 'an', use: ['eat', 'want', 'like', 'this'] },
-  'food/potato':    { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this'] },
-  'food/tomato':    { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this'] },
-  'food/onion':     { g: 'm', n: 'sg', art: 'an', use: ['eat', 'want', 'like', 'this'] },
-  'food/carrot':    { g: 'f', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this'] },
-  'food/fish':      { g: 'f', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this'] },
-  'food/biscuit':   { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this'] },
-  'food/cake':      { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this'] },
-  'food/ice cream': { g: 'f', n: 'sg', art: '',   use: ['eat', 'want', 'like'] },
-  'food/honey':     { g: 'm', n: 'sg', art: '',   use: ['eat', 'want', 'like'] },
-  'food/corn':      { g: 'm', n: 'sg', art: '',   use: ['eat', 'want', 'like'] },
+  'food/apple':     { g: 'm', n: 'sg', art: 'an', use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/banana':    { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/mango':     { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/orange':    { g: 'm', n: 'sg', art: 'an', use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/grapes':    { g: 'm', n: 'pl', art: '',   use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/rice':      { g: 'm', n: 'sg', art: '',   use: ['eat', 'want', 'like', 'buy'] },
+  'food/bread':     { g: 'f', n: 'sg', art: '',   use: ['eat', 'want', 'like', 'buy'] },
+  'food/egg':       { g: 'm', n: 'sg', art: 'an', use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/potato':    { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/tomato':    { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/onion':     { g: 'm', n: 'sg', art: 'an', use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/carrot':    { g: 'f', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/fish':      { g: 'f', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/biscuit':   { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/cake':      { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this', 'buy'] },
+  'food/ice cream': { g: 'f', n: 'sg', art: '',   use: ['eat', 'want', 'like', 'buy'] },
+  'food/honey':     { g: 'm', n: 'sg', art: '',   use: ['eat', 'want', 'like', 'buy'] },
+  'food/corn':      { g: 'm', n: 'sg', art: '',   use: ['eat', 'want', 'like', 'buy'] },
 
   // ---- food: things you drink ------------------------------------------
-  'food/milk':      { g: 'm', n: 'sg', art: '',   use: ['drink', 'want', 'like'] },
-  'food/water':     { g: 'm', n: 'sg', art: '',   use: ['drink', 'want'] },
-  'food/tea':       { g: 'f', n: 'sg', art: '',   use: ['drink', 'want', 'like'] },
+  'food/milk':      { g: 'm', n: 'sg', art: '',   use: ['drink', 'want', 'like', 'buy'] },
+  'food/water':     { g: 'm', n: 'sg', art: '',   use: ['drink', 'want', 'buy'] },
+  'food/tea':       { g: 'f', n: 'sg', art: '',   use: ['drink', 'want', 'like', 'buy'] },
 
   // ---- animals ----------------------------------------------------------
   'animals/dog':       { g: 'm', n: 'sg', art: 'a',  use: ['see', 'like', 'this'] },
@@ -69,25 +69,64 @@ const NOUNS = {
 
   // ---- things around the house -----------------------------------------
   'home/house':    { g: 'm', n: 'sg', art: 'a',  use: ['see', 'this'] },
-  'home/door':     { g: 'm', n: 'sg', art: 'a',  use: ['see', 'this'] },
-  'home/window':   { g: 'f', n: 'sg', art: 'a',  use: ['see', 'this'] },
+  'home/door':     { g: 'm', n: 'sg', art: 'a',  use: ['see', 'this', 'open', 'close'] },
+  'home/window':   { g: 'f', n: 'sg', art: 'a',  use: ['see', 'this', 'open', 'close'] },
   'home/bed':      { g: 'm', n: 'sg', art: 'a',  use: ['see', 'this'] },
-  'home/chair':    { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'this'] },
-  'home/key':      { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'this'] },
-  'home/book':     { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'like', 'this'] },
-  'home/pen':      { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'this'] },
-  'home/bag':      { g: 'm', n: 'sg', art: 'a',  use: ['see', 'want', 'this'] },
-  'home/phone':    { g: 'm', n: 'sg', art: 'a',  use: ['see', 'want', 'this'] },
-  'home/ball':     { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'like', 'this'] },
-  'home/umbrella': { g: 'm', n: 'sg', art: 'an', use: ['see', 'want', 'this'] },
+  'home/chair':    { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'this', 'buy'] },
+  'home/key':      { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'this', 'buy'] },
+  'home/book':     { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'like', 'this', 'buy', 'open', 'close'] },
+  'home/pen':      { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'this', 'buy'] },
+  'home/bag':      { g: 'm', n: 'sg', art: 'a',  use: ['see', 'want', 'this', 'wash', 'buy', 'open', 'close'] },
+  'home/phone':    { g: 'm', n: 'sg', art: 'a',  use: ['see', 'want', 'this', 'buy', 'wash'] },
+  'home/ball':     { g: 'f', n: 'sg', art: 'a',  use: ['see', 'want', 'like', 'this', 'wash', 'buy'] },
+  'home/umbrella': { g: 'm', n: 'sg', art: 'an', use: ['see', 'want', 'this', 'buy', 'open', 'close'] },
+  'home/plate':      { g: 'f', n: 'sg', art: 'a', use: ['see', 'this', 'wash', 'buy'] },
+  'home/cup':        { g: 'm', n: 'sg', art: 'a', use: ['see', 'this', 'wash', 'buy'] },
+  'home/spoon':      { g: 'm', n: 'sg', art: 'a', use: ['see', 'this', 'wash', 'buy'] },
+  'home/knife':      { g: 'm', n: 'sg', art: 'a', use: ['see', 'this', 'wash', 'buy'] },
+  'home/box':        { g: 'm', n: 'sg', art: 'a', use: ['see', 'this', 'open', 'close', 'buy'] },
+  'home/bucket':     { g: 'f', n: 'sg', art: 'a', use: ['see', 'this', 'wash', 'buy'] },
+  'home/soap':       { g: 'm', n: 'sg', art: '',  use: ['see', 'this', 'buy'] },
+  'home/toothbrush': { g: 'm', n: 'sg', art: 'a', use: ['see', 'this', 'wash', 'buy'] },
+  'home/clock':      { g: 'f', n: 'sg', art: 'a', use: ['see', 'this', 'buy'] },
+  'home/mirror':     { g: 'm', n: 'sg', art: 'a', use: ['see', 'this', 'wash', 'buy'] },
+  'home/scissors':   { g: 'f', n: 'sg', enN: 'pl', art: '', use: ['see', 'this', 'buy'] },
+  'home/candle':     { g: 'f', n: 'sg', art: 'a', use: ['see', 'this', 'buy'] },
+
+  // ---- clothes. `enN` is English number, kept apart from `n` because they
+  // disagree: "pants" is plural in English but पैंट is feminine singular in
+  // Hindi, so the article and the verb ending need different answers. -------
+  'clothes/shirt':   { g: 'f', n: 'sg', art: 'a',  use: ['wear', 'wash', 'buy', 'this'] },
+  'clothes/pants':   { g: 'f', n: 'sg', enN: 'pl', art: '', use: ['wear', 'wash', 'buy', 'this'] },
+  'clothes/shoes':   { g: 'm', n: 'pl', art: '',  use: ['wear', 'wash', 'buy', 'this'] },
+  'clothes/socks':   { g: 'm', n: 'pl', art: '',  use: ['wear', 'wash', 'buy', 'this'] },
+  'clothes/cap':     { g: 'f', n: 'sg', art: 'a', use: ['wear', 'wash', 'buy', 'this'] },
+  'clothes/dress':   { g: 'f', n: 'sg', art: 'a', use: ['wear', 'wash', 'buy', 'this'] },
+  'clothes/glasses': { g: 'm', n: 'sg', enN: 'pl', art: '', use: ['wear', 'buy', 'this'] },
+  'clothes/watch':   { g: 'f', n: 'sg', art: 'a', use: ['wear', 'buy', 'this'] },
+  'clothes/coat':    { g: 'm', n: 'sg', art: 'a', use: ['wear', 'wash', 'buy', 'this'] },
+  'clothes/gloves':  { g: 'm', n: 'pl', art: '', use: ['wear', 'wash', 'buy', 'this'] },
+  'clothes/ring':    { g: 'f', n: 'sg', art: 'a', use: ['wear', 'buy', 'this'] },
+  'clothes/sari':    { g: 'f', n: 'sg', art: 'a', use: ['wear', 'wash', 'buy', 'this'] },
+
+  // ---- places. `to` is the English destination phrase, because English is
+  // inconsistent about it: "to school" but "to the market". -----------------
+  'places/school':   { g: 'm', n: 'sg', art: 'a', to: 'to school',       use: ['see', 'this', 'go'] },
+  'places/market':   { g: 'm', n: 'sg', art: 'a', to: 'to the market',   use: ['see', 'this', 'go'] },
+  'places/shop':     { g: 'f', n: 'sg', art: 'a', to: 'to the shop',     use: ['see', 'this', 'go'] },
+  'places/hospital': { g: 'm', n: 'sg', art: 'a', to: 'to the hospital', use: ['see', 'this', 'go'] },
+  'places/temple':   { g: 'm', n: 'sg', art: 'a', to: 'to the temple',   use: ['see', 'this', 'go'] },
+  'places/park':     { g: 'm', n: 'sg', art: 'a', to: 'to the park',     use: ['see', 'this', 'go'] },
+  'places/station':  { g: 'm', n: 'sg', art: 'a', to: 'to the station',  use: ['see', 'this', 'go'] },
+  'places/office':   { g: 'm', n: 'sg', art: 'a', to: 'to the office',   use: ['see', 'this', 'go'] },
 
   // ---- getting about -----------------------------------------------------
-  'travel/car':     { g: 'f', n: 'sg', art: 'a', use: ['see', 'this'] },
+  'travel/car':     { g: 'f', n: 'sg', art: 'a', use: ['see', 'this', 'wash', 'buy'] },
   'travel/bus':     { g: 'f', n: 'sg', art: 'a', use: ['see', 'this'] },
   'travel/train':   { g: 'f', n: 'sg', art: 'a', use: ['see', 'this'] },
-  'travel/bicycle': { g: 'f', n: 'sg', art: 'a', use: ['see', 'want', 'this'] },
+  'travel/bicycle': { g: 'f', n: 'sg', art: 'a', use: ['see', 'want', 'this', 'wash', 'buy'] },
   'travel/boat':    { g: 'f', n: 'sg', art: 'a', use: ['see', 'this'] },
-  'travel/truck':   { g: 'm', n: 'sg', art: 'a', use: ['see', 'this'] }
+  'travel/truck':   { g: 'm', n: 'sg', art: 'a', use: ['see', 'this', 'wash'] }
 };
 
 
@@ -115,6 +154,7 @@ const VERBS = {
       imperf: { m: 'खाता', f: 'खाती' },
       prog: { m: 'खा रहा', f: 'खा रही' },
       fut1: { m: 'खाऊँगा', f: 'खाऊँगी' },
+      fut2: { m: 'खाओगे', f: 'खाओगी' },
       fut3: { m: 'खाएगा', f: 'खाएगी' }
     }
   },
@@ -126,6 +166,7 @@ const VERBS = {
       imperf: { m: 'पीता', f: 'पीती' },
       prog: { m: 'पी रहा', f: 'पी रही' },
       fut1: { m: 'पिऊँगा', f: 'पिऊँगी' },
+      fut2: { m: 'पिओगे', f: 'पिओगी' },
       fut3: { m: 'पिएगा', f: 'पिएगी' }
     }
   },
@@ -137,7 +178,101 @@ const VERBS = {
       imperf: { m: 'देखता', f: 'देखती' },
       prog: { m: 'देख रहा', f: 'देख रही' },
       fut1: { m: 'देखूँगा', f: 'देखूँगी' },
+      fut2: { m: 'देखोगे', f: 'देखोगी' },
       fut3: { m: 'देखेगा', f: 'देखेगी' }
+    }
+  },
+  wear: {
+    use: 'wear', icon: '👕', article: true,
+    en: { base: 'wear', s: 'wears', past: 'wore', ing: 'wearing' },
+    hi: {
+      perf: { 'm.sg': 'पहना', 'f.sg': 'पहनी', 'm.pl': 'पहने', 'f.pl': 'पहनीं' },
+      imperf: { m: 'पहनता', f: 'पहनती' },
+      prog: { m: 'पहन रहा', f: 'पहन रही' },
+      fut1: { m: 'पहनूँगा', f: 'पहनूँगी' },
+      fut2: { m: 'पहनोगे', f: 'पहनोगी' },
+      fut3: { m: 'पहनेगा', f: 'पहनेगी' }
+    }
+  },
+  wash: {
+    use: 'wash', icon: '🧼', article: true,
+    en: { base: 'wash', s: 'washes', past: 'washed', ing: 'washing' },
+    hi: {
+      perf: { 'm.sg': 'धोया', 'f.sg': 'धोई', 'm.pl': 'धोए', 'f.pl': 'धोईं' },
+      imperf: { m: 'धोता', f: 'धोती' },
+      prog: { m: 'धो रहा', f: 'धो रही' },
+      fut1: { m: 'धोऊँगा', f: 'धोऊँगी' },
+      fut2: { m: 'धोओगे', f: 'धोओगी' },
+      fut3: { m: 'धोएगा', f: 'धोएगी' }
+    }
+  },
+  buy: {
+    use: 'buy', icon: '💵', article: true,
+    en: { base: 'buy', s: 'buys', past: 'bought', ing: 'buying' },
+    hi: {
+      perf: { 'm.sg': 'खरीदा', 'f.sg': 'खरीदी', 'm.pl': 'खरीदे', 'f.pl': 'खरीदीं' },
+      imperf: { m: 'खरीदता', f: 'खरीदती' },
+      prog: { m: 'खरीद रहा', f: 'खरीद रही' },
+      fut1: { m: 'खरीदूँगा', f: 'खरीदूँगी' },
+      fut2: { m: 'खरीदोगे', f: 'खरीदोगी' },
+      fut3: { m: 'खरीदेगा', f: 'खरीदेगी' }
+    }
+  },
+  open: {
+    use: 'open', icon: '🔓', article: true,
+    en: { base: 'open', s: 'opens', past: 'opened', ing: 'opening' },
+    hi: {
+      perf: { 'm.sg': 'खोला', 'f.sg': 'खोली', 'm.pl': 'खोले', 'f.pl': 'खोलीं' },
+      imperf: { m: 'खोलता', f: 'खोलती' },
+      prog: { m: 'खोल रहा', f: 'खोल रही' },
+      fut1: { m: 'खोलूँगा', f: 'खोलूँगी' },
+      fut2: { m: 'खोलोगे', f: 'खोलोगी' },
+      fut3: { m: 'खोलेगा', f: 'खोलेगी' }
+    }
+  },
+  close: {
+    // बंद करना is a compound: the करना half carries all the inflection.
+    use: 'close', icon: '🔒', article: true,
+    en: { base: 'close', s: 'closes', past: 'closed', ing: 'closing' },
+    hi: {
+      perf: { 'm.sg': 'बंद किया', 'f.sg': 'बंद की', 'm.pl': 'बंद किए', 'f.pl': 'बंद कीं' },
+      imperf: { m: 'बंद करता', f: 'बंद करती' },
+      prog: { m: 'बंद कर रहा', f: 'बंद कर रही' },
+      fut1: { m: 'बंद करूँगा', f: 'बंद करूँगी' },
+      fut2: { m: 'बंद करोगे', f: 'बंद करोगी' },
+      fut3: { m: 'बंद करेगा', f: 'बंद करेगी' }
+    }
+  }
+};
+
+// ---------------------------------------------------------------------------
+// Intransitive verbs of motion. These take a destination rather than an object,
+// and - crucially - their perfective agrees with the SUBJECT, because there is
+// no object and so no ergative ने: मैं बाज़ार गया, not मैंने.
+// ---------------------------------------------------------------------------
+const MOTION = {
+  go: {
+    icon: '🚶', en: { base: 'go', s: 'goes', past: 'went', ing: 'going' },
+    hi: {
+      perfS: { m: 'गया', f: 'गई' },
+      perfS2: { m: 'गए', f: 'गईं' },
+      imperf: { m: 'जाता', f: 'जाती' },
+      prog: { m: 'जा रहा', f: 'जा रही' },
+      fut1: { m: 'जाऊँगा', f: 'जाऊँगी' },
+      fut2: { m: 'जाओगे', f: 'जाओगी' },
+      fut3: { m: 'जाएगा', f: 'जाएगी' }
+    }
+  },
+  come: {
+    icon: '🏃', en: { base: 'come', s: 'comes', past: 'came', ing: 'coming' },
+    hi: {
+      perfS: { m: 'आया', f: 'आई' },
+      perfS2: { m: 'आए', f: 'आईं' },
+      imperf: { m: 'आता', f: 'आती' },
+      prog: { m: 'आ रहा', f: 'आ रही' },
+      fut1: { m: 'आऊँगा', f: 'आऊँगी' },
+      fut2: { m: 'आओगे', f: 'आओगी' },
+      fut3: { m: 'आएगा', f: 'आएगी' }
     }
   }
 };
@@ -185,13 +320,59 @@ const FRAMES = [
 
   { id: 'heProg', sub: '👨', mark: '▶️', quiz: false,
     en: (v, o) => `He is ${v.en.ing} ${o}.`,
-    hi: (v, o) => `वह ${o} ${v.hi.prog.m} है।` }
+    hi: (v, o) => `वह ${o} ${v.hi.prog.m} है।` },
+
+  // Questions are addressed to "you". The past question is the safest one to
+  // teach first: तुमने takes the ergative, so the verb agrees with the object
+  // and the listener's own gender never enters into it.
+  { id: 'youPastQ', mark: '❓',
+    en: (v, o) => `Did you ${v.en.base} ${o}?`,
+    hi: (v, o, m) => `क्या तुमने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}?` },
+
+  { id: 'youFutureQ', mark: '⏩❓', quiz: false,
+    en: (v, o) => `Will you ${v.en.base} ${o} tomorrow?`,
+    hi: (v, o) => `क्या तुम कल ${o} ${v.hi.fut2.m}?` }
+];
+
+// Frames for the motion verbs. The destination replaces the object, and the
+// perfective agrees with the subject.
+const MOTION_FRAMES = [
+  { id: 'iWent', mark: '⏪',
+    en: (v, d) => `I ${v.en.past} ${d} yesterday.`,
+    hi: (v, d, g) => `कल मैं ${d} ${v.hi.perfS[g]}।` },
+
+  { id: 'iGo', mark: '',
+    en: (v, d) => `I ${v.en.base} ${d}.`,
+    hi: (v, d, g) => `मैं ${d} ${v.hi.imperf[g]} हूँ।` },
+
+  { id: 'iGoing', mark: '▶️',
+    en: (v, d) => `I am ${v.en.ing} ${d}.`,
+    hi: (v, d, g) => `मैं ${d} ${v.hi.prog[g]} हूँ।` },
+
+  { id: 'iWillGo', mark: '⏩',
+    en: (v, d) => `I will ${v.en.base} ${d} tomorrow.`,
+    hi: (v, d, g) => `कल मैं ${d} ${v.hi.fut1[g]}।` },
+
+  { id: 'heWent', sub: '👨', mark: '⏪', quiz: false,
+    en: (v, d) => `He ${v.en.past} ${d} yesterday.`,
+    hi: (v, d) => `कल वह ${d} ${v.hi.perfS.m}।` },
+
+  { id: 'sheWent', sub: '👩', mark: '⏪', quiz: false,
+    en: (v, d) => `She ${v.en.past} ${d} yesterday.`,
+    hi: (v, d) => `कल वह ${d} ${v.hi.perfS.f}।` },
+
+  // तुम takes the plural perfective (गए, not गया), even for one person.
+  { id: 'youWentQ', mark: '❓',
+    en: (v, d) => `Did you ${v.en.base} ${d}?`,
+    hi: (v, d) => `क्या तुम ${d} ${v.hi.perfS2.m}?` }
 ];
 
 // Standalone sentences that are not built from a verb table.
 const TEMPLATES = [
   { id: 'want', use: 'want', article: true, icon: '🤲',
     en: 'I want {obj}.', hi: 'मुझे {obj} चाहिए।' },
+  { id: 'wantQ', use: 'want', article: true, icon: '🤲❓',
+    en: 'Do you want {obj}?', hi: 'क्या तुम्हें {obj} चाहिए?' },
   { id: 'like', use: 'like', article: false, icon: '❤️',
     en: 'I like this {obj}.', hi: 'मुझे यह {obj} पसंद है।',
     enPl: 'I like these {obj}.', hiPl: 'मुझे ये {obj} पसंद हैं।' },
@@ -202,6 +383,11 @@ const TEMPLATES = [
 
 function objectPhrase(word, meta, wantArticle) {
   return (wantArticle && meta.art ? `${meta.art} ` : '') + word.en;
+}
+
+/** English number, which is not always the Hindi one ("pants" vs पैंट). */
+function enPlural(meta) {
+  return (meta.enN || meta.n) === 'pl';
 }
 
 /**
@@ -235,15 +421,37 @@ export function buildSentences(words, { learnerGender = 'm' } = {}) {
     }
   }
 
+  for (const [verbId, v] of Object.entries(MOTION)) {
+    for (const frame of MOTION_FRAMES) {
+      for (const [nounId, meta] of Object.entries(NOUNS)) {
+        if (!meta.use.includes('go') || !meta.to) continue;
+        const w = byId.get(nounId);
+        if (!w || !w.emoji) continue;
+
+        out.push({
+          id: `${frame.id}/${verbId}/${nounId}`,
+          en: frame.en(v, meta.to),
+          hi: frame.hi(v, w.hi, learnerGender),
+          word: w,
+          template: `${frame.id}/${verbId}`,
+          icon: (frame.sub || '') + v.icon + (frame.mark || ''),
+          quizzable: frame.quiz !== false
+        });
+      }
+    }
+  }
+
   for (const t of TEMPLATES) {
     for (const [nounId, meta] of Object.entries(NOUNS)) {
       if (!meta.use.includes(t.use)) continue;
       const w = byId.get(nounId);
       if (!w || !w.emoji) continue;
 
-      const plural = meta.n === 'pl';
-      const enTpl = plural && t.enPl ? t.enPl : t.en;
-      const hiTpl = plural && t.hiPl ? t.hiPl : t.hi;
+      // English and Hindi number are chosen independently. "scissors" is plural
+      // in English but कैंची is singular, so it is "These are scissors" and
+      // यह कैंची है - taking one number for both gets one language wrong.
+      const enTpl = enPlural(meta) && t.enPl ? t.enPl : t.en;
+      const hiTpl = meta.n === 'pl' && t.hiPl ? t.hiPl : t.hi;
 
       out.push({
         id: `${t.id}/${nounId}`,
@@ -261,6 +469,6 @@ export function buildSentences(words, { learnerGender = 'm' } = {}) {
 }
 
 export const FRAME_COUNT = FRAMES.length;
-export const VERB_COUNT = Object.keys(VERBS).length;
+export const VERB_COUNT = Object.keys(VERBS).length + Object.keys(MOTION).length;
 export const TEMPLATE_COUNT = TEMPLATES.length;
 export const TAGGED_NOUN_COUNT = Object.keys(NOUNS).length;
