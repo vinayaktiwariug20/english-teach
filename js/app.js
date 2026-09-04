@@ -243,18 +243,32 @@ function screenGate() {
   );
 }
 
+// `level` is the level at which a mode appears. Levels are set by the
+// caregiver, never by the app: a new tile turning up on its own, mid-session,
+// is the sort of surprise that ends a session.
 const MODES = [
-  { id: 'words',   cls: 't-words',   icon: '🖼️', hi: 'शब्द',    en: 'Words' },
-  { id: 'listen',  cls: 't-listen',  icon: '👂', hi: 'सुनो',    en: 'Listen' },
-  { id: 'read',    cls: 't-read',    icon: '🔤', hi: 'पढ़ो',    en: 'Read' },
-  { id: 'phrases', cls: 't-phrases', icon: '💬', hi: 'बोलो',    en: 'Say it' },
-  { id: 'sentences', cls: 't-sentences', icon: '🗣️', hi: 'वाक्य', en: 'Sentences' },
-  { id: 'money', cls: 't-money', icon: '💰', hi: 'पैसे', en: 'Money' }
+  { id: 'words',   level: 1, cls: 't-words',   icon: '🖼️', hi: 'शब्द',    en: 'Words' },
+  { id: 'listen',  level: 1, cls: 't-listen',  icon: '👂', hi: 'सुनो',    en: 'Listen' },
+  { id: 'read',    level: 1, cls: 't-read',    icon: '🔤', hi: 'पढ़ो',    en: 'Read' },
+  { id: 'phrases', level: 1, cls: 't-phrases', icon: '💬', hi: 'बोलो',    en: 'Say it' },
+  { id: 'sentences', level: 2, cls: 't-sentences', icon: '🗣️', hi: 'वाक्य', en: 'Sentences' },
+  { id: 'money', level: 4, cls: 't-money', icon: '💰', hi: 'पैसे', en: 'Money' }
 ];
+
+const LEVELS = [
+  { n: 1, hi: 'शब्द', en: 'Words and phrases', note: 'Pictures, words, listening, reading, everyday phrases.' },
+  { n: 2, hi: 'वाक्य', en: 'First sentences', note: 'Adds whole sentences: past and present, three verbs.' },
+  { n: 3, hi: 'और वाक्य', en: 'More sentences', note: 'Adds future, continuous, negatives, he and she, questions, going places - ten verbs.' },
+  { n: 4, hi: 'पैसे', en: 'Money', note: 'Adds shopping: prices, paying, and working out the change.' }
+];
+
+function level() {
+  return store.settings().level || 1;
+}
 
 function screenHome() {
   const tiles = el('div', { class: 'tiles' });
-  for (const m of MODES) {
+  for (const m of MODES.filter((m) => m.level <= level())) {
     tiles.append(
       el('button', {
         class: `tile ${m.cls}`,
@@ -330,7 +344,10 @@ function startPhrases() {
 
 function startSentences() {
   const deck = shuffle(
-    buildSentences(activeWords(), { learnerGender: store.settings().learnerGender })
+    buildSentences(activeWords(), {
+      learnerGender: store.settings().learnerGender,
+      level: level()
+    })
   );
   go('sentences', { deck, deckIndex: 0, sentSeen: [], sentQuiz: null });
 }
@@ -696,6 +713,50 @@ function screenAdmin() {
       el('h1', { text: "Caregiver settings" })
     )
   );
+
+  // --- level ---------------------------------------------------------------
+  const learnedCount = store.knownWords(WORDS).length;
+  const progress = store.levelProgress(learnedCount);
+  const levelPanel = el('div', { class: 'panel' });
+
+  for (const lv of LEVELS) {
+    const current = lv.n === level();
+    const bar = progress[lv.n];
+    const row = el('button', {
+      class: `level-row ${current ? 'on' : ''}`,
+      onclick: () => {
+        store.setSetting('level', lv.n);
+        render();
+      }
+    },
+      el('div', { class: 'level-n' }, String(lv.n)),
+      el('div', { class: 'level-body' },
+        el('div', { class: 'level-name' },
+          el('span', { class: 'hi', text: lv.hi }),
+          el('span', { class: 'level-en', text: lv.en }),
+          bar && bar.ready && !current ? el('span', { class: 'level-ready', text: 'ready' }) : null
+        ),
+        el('div', { class: 'level-note', text: lv.note })
+      )
+    );
+    levelPanel.append(row);
+  }
+
+  const next = progress[level() + 1];
+  levelPanel.append(
+    el('div', { class: 'note' },
+      next
+        ? `Towards level ${level() + 1}: ${next.words[0]} of ${next.words[1]} words learned, `
+          + `${next.answers[0]} of ${next.answers[1]} questions answered, `
+          + `${next.accuracy[0]}% correct against ${next.accuracy[1]}% wanted. `
+          + 'These are a rough signal only - the app never changes level by itself, '
+          + 'and you know better than the numbers when he is ready. Moving up adds '
+          + 'content; it never takes away what he already has.'
+        : 'This is the last level. Everything is available.'
+    )
+  );
+
+  wrap.append(el('h2', { text: 'Level' }), levelPanel);
 
   // --- voices -------------------------------------------------------------
   const enVoices = sp.voicesFor('en');

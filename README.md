@@ -59,6 +59,32 @@ plus endlessly generated shop transactions.
 
 ---
 
+## Levels
+
+Everything does not arrive at once. Four levels, each adding to the one before
+and never taking anything away:
+
+| | | What it adds |
+| --- | --- | --- |
+| 1 | शब्द | Pictures, words, listening, reading, everyday phrases. |
+| 2 | वाक्य | Whole sentences: past and present, three verbs. 311 of them. |
+| 3 | और वाक्य | Future, continuous, negatives, he and she, questions, going places. Ten verbs, 2,159 sentences. |
+| 4 | पैसे | Shopping: prices, paying, and working out the change. |
+
+**The caregiver sets the level; the app never changes it.** The caregiver screen
+shows how far off the next one is - words learned, questions answered, accuracy
+- and marks a level *ready* when those are met, but a tile appearing on its own
+mid-session is exactly the kind of surprise that ends a session, and a number is
+a worse judge of readiness than the person sitting alongside.
+
+At level 1 the home screen is the original four tiles, which is a calmer place
+to start than six.
+
+Levels arrived after the app was already in use, so anyone with existing
+progress keeps every mode they had; only a fresh install begins at level 1.
+
+---
+
 ## The caregiver screen
 
 Settings are reachable only by tapping **the four corners of the home screen in

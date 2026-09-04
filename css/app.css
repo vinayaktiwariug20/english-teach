@@ -662,6 +662,50 @@ button {
   max-width: 58%;
 }
 
+.admin .level-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 10px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: none;
+}
+
+.admin .level-row.on {
+  border-color: var(--teal);
+  background: #eef7f5;
+}
+
+.admin .level-n {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  background: var(--line);
+  color: var(--ink);
+}
+
+.admin .level-row.on .level-n { background: var(--teal); color: #fff; }
+.admin .level-body { min-width: 0; }
+.admin .level-name { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 18px; font-weight: 700; }
+.admin .level-en { font-weight: 600; color: var(--ink-soft); font-size: 15px; }
+.admin .level-ready {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: var(--green);
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.admin .level-note { font-size: 14px; color: var(--ink-soft); line-height: 1.45; margin-top: 3px; }
+
 .admin .chips {
   display: flex;
   flex-wrap: wrap;

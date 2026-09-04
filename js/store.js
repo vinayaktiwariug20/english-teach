@@ -20,6 +20,7 @@ const DEFAULTS = {
     choices: 'auto',      // 'auto' | 2 | 3 | 4
     moneyMax: 10,         // highest price in the shopping mode
     numbersInQuiz: false, // keep counting out of the picture quizzes
+    level: 1,             // 1-4; the caregiver decides when to move up
     categories: null      // null = all enabled, else array of category ids
   },
   // item id -> { seen, ok, bad, last }
@@ -38,11 +39,21 @@ function load() {
     const raw = localStorage.getItem(KEY);
     if (!raw) return clone(DEFAULTS);
     const parsed = JSON.parse(raw);
-    return {
+    const loaded = {
       settings: { ...DEFAULTS.settings, ...(parsed.settings || {}) },
       progress: parsed.progress || {},
       stats: { ...DEFAULTS.stats, ...(parsed.stats || {}) }
     };
+
+    // Levels arrived after people were already using every mode. Someone with
+    // existing progress keeps everything they had; only a fresh install starts
+    // at level 1. Taking modes away from a working app would be a regression
+    // dressed up as a feature.
+    if (parsed.settings && parsed.settings.level === undefined
+        && Object.keys(loaded.progress).length > 0) {
+      loaded.settings.level = 4;
+    }
+    return loaded;
   } catch (_) {
     // Private mode, cleared storage, corrupt JSON: start fresh rather than break.
     return clone(DEFAULTS);
@@ -139,6 +150,31 @@ export function chooseTarget(pool, exclude = []) {
     if (r <= 0) return s.w;
   }
   return scored[scored.length - 1].w;
+}
+
+// What each level asks of the learner before the next one is worth trying.
+// These are a signal for the caregiver, not a gate - the app never moves the
+// level by itself, because new tiles appearing mid-session is precisely the
+// kind of surprise this app is built to avoid.
+const LEVEL_BAR = {
+  2: { words: 30, answers: 100, accuracy: 0.7 },
+  3: { words: 60, answers: 300, accuracy: 0.75 },
+  4: { words: 80, answers: 500, accuracy: 0.75 }
+};
+
+export function levelProgress(knownCount) {
+  const { answers, correct } = state.stats;
+  const accuracy = answers ? correct / answers : 0;
+  const out = {};
+  for (const [lvl, bar] of Object.entries(LEVEL_BAR)) {
+    out[lvl] = {
+      ready: knownCount >= bar.words && answers >= bar.answers && accuracy >= bar.accuracy,
+      words: [knownCount, bar.words],
+      answers: [answers, bar.answers],
+      accuracy: [Math.round(accuracy * 100), Math.round(bar.accuracy * 100)]
+    };
+  }
+  return out;
 }
 
 /** How many answer choices to show, based on recent accuracy. */

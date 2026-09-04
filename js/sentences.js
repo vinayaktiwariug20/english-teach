@@ -147,7 +147,7 @@ const NOUNS = {
 // ---------------------------------------------------------------------------
 const VERBS = {
   eat: {
-    use: 'eat', icon: '🍽️', article: true,
+    level: 2, use: 'eat', icon: '🍽️', article: true,
     en: { base: 'eat', s: 'eats', past: 'ate', ing: 'eating' },
     hi: {
       perf: { 'm.sg': 'खाया', 'f.sg': 'खाई', 'm.pl': 'खाए', 'f.pl': 'खाईं' },
@@ -159,7 +159,7 @@ const VERBS = {
     }
   },
   drink: {
-    use: 'drink', icon: '🥤', article: false,
+    level: 2, use: 'drink', icon: '🥤', article: false,
     en: { base: 'drink', s: 'drinks', past: 'drank', ing: 'drinking' },
     hi: {
       perf: { 'm.sg': 'पिया', 'f.sg': 'पी', 'm.pl': 'पिए', 'f.pl': 'पीं' },
@@ -171,7 +171,7 @@ const VERBS = {
     }
   },
   see: {
-    use: 'see', icon: '👀', article: true, skip: ['iProg', 'heProg'],
+    level: 2, use: 'see', icon: '👀', article: true, skip: ['iProg', 'heProg'],
     en: { base: 'see', s: 'sees', past: 'saw', ing: 'seeing' },
     hi: {
       perf: { 'm.sg': 'देखा', 'f.sg': 'देखी', 'm.pl': 'देखे', 'f.pl': 'देखीं' },
@@ -183,7 +183,7 @@ const VERBS = {
     }
   },
   wear: {
-    use: 'wear', icon: '👕', article: true,
+    level: 3, use: 'wear', icon: '👕', article: true,
     en: { base: 'wear', s: 'wears', past: 'wore', ing: 'wearing' },
     hi: {
       perf: { 'm.sg': 'पहना', 'f.sg': 'पहनी', 'm.pl': 'पहने', 'f.pl': 'पहनीं' },
@@ -195,7 +195,7 @@ const VERBS = {
     }
   },
   wash: {
-    use: 'wash', icon: '🧼', article: true,
+    level: 3, use: 'wash', icon: '🧼', article: true,
     en: { base: 'wash', s: 'washes', past: 'washed', ing: 'washing' },
     hi: {
       perf: { 'm.sg': 'धोया', 'f.sg': 'धोई', 'm.pl': 'धोए', 'f.pl': 'धोईं' },
@@ -207,7 +207,7 @@ const VERBS = {
     }
   },
   buy: {
-    use: 'buy', icon: '💵', article: true,
+    level: 3, use: 'buy', icon: '💵', article: true,
     en: { base: 'buy', s: 'buys', past: 'bought', ing: 'buying' },
     hi: {
       perf: { 'm.sg': 'खरीदा', 'f.sg': 'खरीदी', 'm.pl': 'खरीदे', 'f.pl': 'खरीदीं' },
@@ -219,7 +219,7 @@ const VERBS = {
     }
   },
   open: {
-    use: 'open', icon: '🔓', article: true,
+    level: 3, use: 'open', icon: '🔓', article: true,
     en: { base: 'open', s: 'opens', past: 'opened', ing: 'opening' },
     hi: {
       perf: { 'm.sg': 'खोला', 'f.sg': 'खोली', 'm.pl': 'खोले', 'f.pl': 'खोलीं' },
@@ -232,7 +232,7 @@ const VERBS = {
   },
   close: {
     // बंद करना is a compound: the करना half carries all the inflection.
-    use: 'close', icon: '🔒', article: true,
+    level: 3, use: 'close', icon: '🔒', article: true,
     en: { base: 'close', s: 'closes', past: 'closed', ing: 'closing' },
     hi: {
       perf: { 'm.sg': 'बंद किया', 'f.sg': 'बंद की', 'm.pl': 'बंद किए', 'f.pl': 'बंद कीं' },
@@ -286,50 +286,50 @@ const MOTION = {
 // the recognition questions.
 // ---------------------------------------------------------------------------
 const FRAMES = [
-  { id: 'iPast', mark: '⏪',
+  { id: 'iPast', level: 2, mark: '⏪',
     en: (v, o) => `I ${v.en.past} ${o} yesterday.`,
     hi: (v, o, m) => `कल मैंने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}।` },
 
-  { id: 'iPresent', mark: '',
+  { id: 'iPresent', level: 2, mark: '',
     en: (v, o) => `I ${v.en.base} ${o}.`,
     hi: (v, o, m, g) => `मैं ${o} ${v.hi.imperf[g]} हूँ।` },
 
-  { id: 'iProg', mark: '▶️',
+  { id: 'iProg', level: 3, mark: '▶️',
     en: (v, o) => `I am ${v.en.ing} ${o}.`,
     hi: (v, o, m, g) => `मैं ${o} ${v.hi.prog[g]} हूँ।` },
 
-  { id: 'iFuture', mark: '⏩',
+  { id: 'iFuture', level: 3, mark: '⏩',
     en: (v, o) => `I will ${v.en.base} ${o} tomorrow.`,
     hi: (v, o, m, g) => `कल मैं ${o} ${v.hi.fut1[g]}।` },
 
-  { id: 'iPastNeg', mark: '❌',
+  { id: 'iPastNeg', level: 3, mark: '❌',
     en: (v, o) => `I did not ${v.en.base} ${o}.`,
     hi: (v, o, m) => `मैंने ${o} नहीं ${v.hi.perf[`${m.g}.${m.n}`]}।` },
 
-  { id: 'hePast', sub: '👨', mark: '⏪', quiz: false,
+  { id: 'hePast', level: 3, sub: '👨', mark: '⏪', quiz: false,
     en: (v, o) => `He ${v.en.past} ${o} yesterday.`,
     hi: (v, o, m) => `कल उसने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}।` },
 
-  { id: 'hePresent', sub: '👨',
+  { id: 'hePresent', level: 3, sub: '👨',
     en: (v, o) => `He ${v.en.s} ${o}.`,
     hi: (v, o) => `वह ${o} ${v.hi.imperf.m} है।` },
 
-  { id: 'shePresent', sub: '👩',
+  { id: 'shePresent', level: 3, sub: '👩',
     en: (v, o) => `She ${v.en.s} ${o}.`,
     hi: (v, o) => `वह ${o} ${v.hi.imperf.f} है।` },
 
-  { id: 'heProg', sub: '👨', mark: '▶️', quiz: false,
+  { id: 'heProg', level: 3, sub: '👨', mark: '▶️', quiz: false,
     en: (v, o) => `He is ${v.en.ing} ${o}.`,
     hi: (v, o) => `वह ${o} ${v.hi.prog.m} है।` },
 
   // Questions are addressed to "you". The past question is the safest one to
   // teach first: तुमने takes the ergative, so the verb agrees with the object
   // and the listener's own gender never enters into it.
-  { id: 'youPastQ', mark: '❓',
+  { id: 'youPastQ', level: 3, mark: '❓',
     en: (v, o) => `Did you ${v.en.base} ${o}?`,
     hi: (v, o, m) => `क्या तुमने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}?` },
 
-  { id: 'youFutureQ', mark: '⏩❓', quiz: false,
+  { id: 'youFutureQ', level: 3, mark: '⏩❓', quiz: false,
     en: (v, o) => `Will you ${v.en.base} ${o} tomorrow?`,
     hi: (v, o) => `क्या तुम कल ${o} ${v.hi.fut2.m}?` }
 ];
@@ -369,14 +369,14 @@ const MOTION_FRAMES = [
 
 // Standalone sentences that are not built from a verb table.
 const TEMPLATES = [
-  { id: 'want', use: 'want', article: true, icon: '🤲',
+  { id: 'want', level: 2, use: 'want', article: true, icon: '🤲',
     en: 'I want {obj}.', hi: 'मुझे {obj} चाहिए।' },
-  { id: 'wantQ', use: 'want', article: true, icon: '🤲❓',
+  { id: 'wantQ', level: 3, use: 'want', article: true, icon: '🤲❓',
     en: 'Do you want {obj}?', hi: 'क्या तुम्हें {obj} चाहिए?' },
-  { id: 'like', use: 'like', article: false, icon: '❤️',
+  { id: 'like', level: 2, use: 'like', article: false, icon: '❤️',
     en: 'I like this {obj}.', hi: 'मुझे यह {obj} पसंद है।',
     enPl: 'I like these {obj}.', hiPl: 'मुझे ये {obj} पसंद हैं।' },
-  { id: 'this', use: 'this', article: true, icon: '👉',
+  { id: 'this', level: 2, use: 'this', article: true, icon: '👉',
     en: 'This is {obj}.', hi: 'यह {obj} है।',
     enPl: 'These are {obj}.', hiPl: 'ये {obj} हैं।' }
 ];
@@ -405,13 +405,15 @@ function enPlural(meta) {
  * `words` are the WORDS entries, so the Hindi noun and the picture come
  * straight from the vocabulary rather than being repeated here.
  */
-export function buildSentences(words, { learnerGender = 'm' } = {}) {
+export function buildSentences(words, { learnerGender = 'm', level = 99 } = {}) {
   const byId = new Map(words.map((w) => [w.id, w]));
   const out = [];
 
   for (const [verbId, v] of Object.entries(VERBS)) {
+    if ((v.level || 3) > level) continue;
     for (const frame of FRAMES) {
       if (v.skip && v.skip.includes(frame.id)) continue;
+      if ((frame.level || 3) > level) continue;
 
       for (const [nounId, meta] of Object.entries(NOUNS)) {
         if (!meta.use.includes(v.use)) continue;
@@ -431,7 +433,9 @@ export function buildSentences(words, { learnerGender = 'm' } = {}) {
     }
   }
 
+  // Motion verbs and places arrive together at level 3.
   for (const [verbId, v] of Object.entries(MOTION)) {
+    if (level < 3) break;
     for (const frame of MOTION_FRAMES) {
       for (const [nounId, meta] of Object.entries(NOUNS)) {
         if (!meta.use.includes('go') || !meta.to) continue;
@@ -452,6 +456,7 @@ export function buildSentences(words, { learnerGender = 'm' } = {}) {
   }
 
   for (const t of TEMPLATES) {
+    if ((t.level || 3) > level) continue;
     for (const [nounId, meta] of Object.entries(NOUNS)) {
       if (!meta.use.includes(t.use)) continue;
       const w = byId.get(nounId);
