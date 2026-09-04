@@ -108,6 +108,7 @@ const state = {
   choices: [],
   recent: [],
   stars: 0,
+  revealed: false,
   shop: null,
   shopStep: 0,
   sentSeen: [],
@@ -265,7 +266,9 @@ const LEVELS = [
   { n: 4, hi: 'वह और नहीं', en: 'He, she, and not', count: 1657,
     note: 'She eats an apple. I did not eat an apple. He is eating an apple.' },
   { n: 5, hi: 'सवाल और जगहें', en: 'Questions and places', count: 2159,
-    note: 'Did you eat an apple? I went to the market yesterday. Do you want water?' }
+    note: 'Did you eat an apple? I went to the market yesterday. Do you want water?' },
+  { n: 6, hi: 'दो बातें', en: 'Two things at once', count: 2319,
+    note: 'I ate honey and drank tea yesterday. Two clauses in one sentence - each verb still agreeing with its own object.' }
 ];
 
 function level() {
@@ -470,8 +473,20 @@ function screenMoney() {
 
 /** A sentence shown as pictures: the verb, then what it acts on. */
 function sentencePicture(s, size = 'ico') {
+  const cls = size === 'ico' ? 'ico' : 'pic';
+  if (s.pair) {
+    // Two clauses, so two verb-and-object pairs side by side.
+    const node = el('div', { class: 'sent-pic two' });
+    for (const part of s.pair) {
+      node.append(
+        el('span', { class: `emoji ${cls} verb`, text: part.icon }),
+        pictureNode(part.word, size)
+      );
+    }
+    return node;
+  }
   return el('div', { class: 'sent-pic' },
-    el('span', { class: `emoji ${size === 'ico' ? 'ico' : 'pic'} verb`, text: s.icon }),
+    el('span', { class: `emoji ${cls} verb`, text: s.icon }),
     pictureNode(s.word, size)
   );
 }
@@ -552,17 +567,28 @@ function screenSentenceQuiz() {
 
 function screenCard(kind) {
   const isLong = kind !== 'word';
+  // With the scaffold off, the Hindi is the prompt and the English is what he
+  // has to come up with. Nothing is marked; he says it, then checks himself.
+  const hideEnglish = store.settings().reveal === 'hindi' && !state.revealed;
   const item = state.deck[state.deckIndex];
   if (!item) return screenHome();
 
   store.noteSeen(item.id);
 
+  const reveal = () => {
+    state.revealed = true;
+    render();
+    sayEn(item.en);
+  };
+
   const card = el('div', {
     class: 'card',
-    onclick: () => sayEn(item.en)
+    onclick: () => (hideEnglish ? reveal() : sayEn(item.en))
   },
     kind === 'sentence' ? sentencePicture(item, 'pic') : pictureNode(item, 'pic'),
-    el('div', { class: `word-en ${isLong ? 'phrase' : ''}`, text: item.en }),
+    hideEnglish
+      ? el('div', { class: 'hidden-en' }, el('span', { class: 'emoji', text: '👁️' }))
+      : el('div', { class: `word-en ${isLong ? 'phrase' : ''}`, text: item.en }),
     el('div', { class: `word-hi hi ${isLong ? 'phrase' : ''}`, text: item.hi }),
     // A reviewed example sentence, when one has been approved for this item.
     item.ex
@@ -580,13 +606,16 @@ function screenCard(kind) {
   );
 
   const actions = el('div', { class: 'actions' },
-    el('button', { class: 'act act-hear', onclick: () => sayEn(item.en) },
-      el('span', { class: 'ico emoji', text: '🔊' })
-    ),
+    hideEnglish
+      ? el('button', { class: 'act act-reveal', onclick: reveal },
+          el('span', { class: 'ico emoji', text: '👁️' }))
+      : el('button', { class: 'act act-hear', onclick: () => sayEn(item.en) },
+          el('span', { class: 'ico emoji', text: '🔊' })),
     el('button', { class: 'act act-hindi', onclick: () => sayHi(item.hi) }, 'हिंदी'),
     el('button', {
       class: 'act act-next',
       onclick: () => {
+        state.revealed = false;
         if (kind === 'sentence') {
           state.sentSeen.push(item);
           if (state.sentSeen.length % 4 === 0) buildSentenceQuiz();
@@ -605,7 +634,8 @@ function screenCard(kind) {
   );
 
   if (store.settings().autoSpeak) {
-    setTimeout(() => sayEn(item.en), 320);
+    // Speaking the English while it is hidden would hand over the answer.
+    setTimeout(() => (hideEnglish ? sayHi(item.hi) : sayEn(item.en)), 320);
   }
 
   return el('div', { class: 'screen' }, topBar({ withStars: false }), card, actions);
@@ -816,6 +846,24 @@ function screenAdmin() {
   }
 
   voicePanel.append(row('Speak automatically', toggleBtn('autoSpeak')));
+
+  const revealSelect = el('select', {});
+  for (const [val, label] of [['both', 'Show both languages'], ['hindi', 'Hindi first, English hidden']]) {
+    const opt = el('option', { value: val, text: label });
+    if (s.reveal === val) opt.selected = true;
+    revealSelect.append(opt);
+  }
+  revealSelect.addEventListener('change', () => store.setSetting('reveal', revealSelect.value));
+  voicePanel.append(row('On the cards', revealSelect));
+  voicePanel.append(
+    el('div', { class: 'note' },
+      'Showing both is the gentler setting and the way to learn something new. '
+      + 'Hiding the English turns every card into a test he marks himself: the '
+      + 'Hindi is spoken, he says the English, then taps the eye to check. It is '
+      + 'the single biggest step up in difficulty here, and it does not change '
+      + 'the words at all - only how much help is on the screen.'
+    )
+  );
   voicePanel.append(row('Use offline voice (faster)', toggleBtn('preferLocalVoice')));
   voicePanel.append(
     el('div', { class: 'note' },

@@ -20,7 +20,8 @@ const DEFAULTS = {
     choices: 'auto',      // 'auto' | 2 | 3 | 4
     moneyMax: 10,         // highest price in the shopping mode
     numbersInQuiz: false, // keep counting out of the picture quizzes
-    level: 1,             // 1-4; the caregiver decides when to move up
+    level: 1,             // 1-6; the caregiver decides when to move up
+    reveal: 'both',       // 'both' | 'hindi' - hide the English until asked for
     categories: null      // null = all enabled, else array of category ids
   },
   // item id -> { seen, ok, bad, last }

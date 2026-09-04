@@ -73,6 +73,19 @@ learner meets rather than replacing it.
 | 3 | आने वाला कल | Future and continuous, eight verbs | 815 |
 | 4 | वह और नहीं | He, she, and negatives | 1,657 |
 | 5 | सवाल और जगहें | Questions, and going places | 2,159 |
+| 6 | दो बातें | Two clauses in one sentence | 2,319 |
+
+Level 6 is two clauses joined by *and*, which is the clearest demonstration of
+the agreement rule in the app - one मैंने covers both halves, and each verb
+still agrees with its own object:
+
+```
+कल मैंने शहद खाया और चाय पी।     I ate honey and drank tea yesterday.
+मैं आलू खाता हूँ और चाय पीता हूँ।   I eat a potato and drink tea.
+```
+
+They carry two pictures, so they are taught on cards and never asked as picture
+questions - four glyphs will not fit a choice tile.
 
 The caregiver sets it; the app never moves it. The per-section accuracy figures
 further down that screen are the evidence for when to move: consistently above
@@ -248,6 +261,24 @@ would teach the mistake:
 The highest price is set on the caregiver screen (₹5, ₹10, ₹20 or ₹50), which
 is the difficulty dial. Number words now run to twenty in the vocabulary too,
 so they can be met in Words and Listen before they turn up as change.
+
+---
+
+## Taking the scaffold away
+
+Every card normally shows the picture, the English and the Hindi at once. That
+is right for meeting something new and wrong once it is known, because the
+answer is never withheld and there is nothing to retrieve.
+
+**On the cards → Hindi first, English hidden** turns every card into a test the
+learner marks himself. The picture and the Hindi are there, the Hindi is what is
+spoken, and the English sits behind an eye until he taps it. He says it, then
+checks.
+
+This changes no words at all - only how much help is on the screen - and it is
+probably the single largest step up in difficulty available here. It is worth
+trying before adding any more content, because it answers a question no amount
+of new material does: whether the ceiling was the grammar or just the support.
 
 ---
 

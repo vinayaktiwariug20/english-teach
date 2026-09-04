@@ -455,6 +455,8 @@ export function buildSentences(words, { learnerGender = 'm', level = 99 } = {}) 
     }
   }
 
+  out.push(...buildPairs(byId, level, learnerGender));
+
   for (const t of TEMPLATES) {
     if ((t.level || 3) > level) continue;
     for (const [nounId, meta] of Object.entries(NOUNS)) {
@@ -481,6 +483,100 @@ export function buildSentences(words, { learnerGender = 'm', level = 99 } = {}) 
   }
 
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// Two-clause sentences: the top tier.
+//
+// Two verb phrases sharing one subject. In the ergative past a single मैंने
+// covers both clauses, and each verb still agrees with its OWN object - which
+// makes these the clearest demonstration of the agreement rule in the whole
+// app: मैंने सेब खाया और चाय पी। (सेब masculine, चाय feminine.)
+//
+// They carry two pictures, so they are taught on cards and never asked as
+// picture questions - four glyphs will not fit a choice tile.
+// ---------------------------------------------------------------------------
+const CLAUSE_PAIRS = [
+  { a: 'eat', b: 'drink' },
+  { a: 'buy', b: 'eat', aCat: 'food' }
+];
+
+const PAIR_FRAMES = [
+  {
+    id: 'iPastAnd', level: 6, mark: '⏪',
+    en: (va, oa, vb, ob) => `I ${va.en.past} ${oa} and ${vb.en.past} ${ob} yesterday.`,
+    hi: (va, ha, ma, vb, hb, mb) =>
+      `कल मैंने ${ha} ${va.hi.perf[`${ma.g}.${ma.n}`]} और ${hb} ${vb.hi.perf[`${mb.g}.${mb.n}`]}।`
+  },
+  {
+    id: 'iPresentAnd', level: 6, mark: '',
+    en: (va, oa, vb, ob) => `I ${va.en.base} ${oa} and ${vb.en.base} ${ob}.`,
+    hi: (va, ha, ma, vb, hb, mb, g) =>
+      `मैं ${ha} ${va.hi.imperf[g]} हूँ और ${hb} ${vb.hi.imperf[g]} हूँ।`
+  }
+];
+
+const PAIR_CAP = 40; // per pair per frame, so these do not swamp the deck
+
+function nounsFor(use, byId, cat) {
+  const out = [];
+  for (const [id, meta] of Object.entries(NOUNS)) {
+    if (!meta.use.includes(use)) continue;
+    if (cat && !id.startsWith(`${cat}/`)) continue;
+    const word = byId.get(id);
+    if (word && word.emoji) out.push({ word, meta });
+  }
+  return out;
+}
+
+function buildPairs(byId, level, learnerGender) {
+  const out = [];
+  if (level < 6) return out;
+
+  for (const pair of CLAUSE_PAIRS) {
+    const va = VERBS[pair.a];
+    const vb = VERBS[pair.b];
+    const as = nounsFor(va.use, byId, pair.aCat);
+    const bs = nounsFor(vb.use, byId, pair.bCat);
+
+    for (const frame of PAIR_FRAMES) {
+      const combos = [];
+      for (const A of as) {
+        for (const B of bs) {
+          if (A.word.id === B.word.id) continue;
+          combos.push([A, B]);
+        }
+      }
+      for (const [A, B] of shuffleLocal(combos).slice(0, PAIR_CAP)) {
+        out.push({
+          id: `${frame.id}/${pair.a}-${pair.b}/${A.word.id}/${B.word.id}`,
+          en: frame.en(
+            va, objectPhrase(A.word, A.meta, va.article),
+            vb, objectPhrase(B.word, B.meta, vb.article)
+          ),
+          hi: frame.hi(va, A.word.hi, A.meta, vb, B.word.hi, B.meta, learnerGender),
+          word: A.word,
+          pair: [
+            { icon: va.icon + (frame.mark || ''), word: A.word },
+            { icon: vb.icon, word: B.word }
+          ],
+          template: `${frame.id}/${pair.a}-${pair.b}`,
+          icon: va.icon + vb.icon + (frame.mark || ''),
+          quizzable: false
+        });
+      }
+    }
+  }
+  return out;
+}
+
+function shuffleLocal(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 /** Vocabulary entries that can be bought, with their grammar tags. */
