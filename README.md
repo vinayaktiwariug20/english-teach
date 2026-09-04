@@ -89,7 +89,7 @@ questions - four glyphs will not fit a choice tile.
 
 The caregiver sets it; the app never moves it. The per-section accuracy figures
 further down that screen are the evidence for when to move: consistently above
-about 90% in a section means it has stopped stretching him.
+about 90% in a section means it has stopped stretching them.
 
 Levels arrived after the app was already in use, so an existing install starts
 at level 5 with everything it already had, and can be moved down deliberately.
@@ -271,9 +271,9 @@ is right for meeting something new and wrong once it is known, because the
 answer is never withheld and there is nothing to retrieve.
 
 **On the cards → Hindi first, English hidden** turns every card into a test the
-learner marks himself. The picture and the Hindi are there, the Hindi is what is
-spoken, and the English sits behind an eye until he taps it. He says it, then
-checks.
+learner marks themselves. The picture and the Hindi are there, the Hindi is what
+is spoken, and the English sits behind an eye until they tap it. They say it,
+then check.
 
 This changes no words at all - only how much help is on the screen - and it is
 probably the single largest step up in difficulty available here. It is worth

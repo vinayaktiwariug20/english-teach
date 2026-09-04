@@ -22,6 +22,11 @@ const DEFAULTS = {
     numbersInQuiz: false, // keep counting out of the picture quizzes
     level: 1,             // 1-6; the caregiver decides when to move up
     reveal: 'both',       // 'both' | 'hindi' - hide the English until asked for
+    // The corner code is unguessable by design, which also means it is
+    // forgettable. A line on the home screen keeps it from being lost; it is
+    // in English, small, and at the bottom, so the learner has no reason to
+    // read it - but it can be switched off if it draws taps.
+    showHint: true,
     categories: null      // null = all enabled, else array of category ids
   },
   // item id -> { seen, ok, bad, last }
@@ -111,7 +116,7 @@ export function noteAnswer(id, correct, mode = 'other') {
   if (correct) state.stats.correct += 1;
 
   // Per-mode, because one overall figure cannot answer "is this still hard
-  // enough for him" - he may be at ceiling in one mode and struggling in
+  // enough for them" - a learner may be at ceiling in one mode and struggling in
   // another, and the average hides both.
   const m = (state.stats.byMode[mode] ||= { answers: 0, correct: 0 });
   m.answers += 1;

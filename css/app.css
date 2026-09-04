@@ -216,6 +216,37 @@ button {
 /* An odd number of tiles would leave a hole, so the last one spans instead. */
 .tiles .tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
+/* The written-down corner code. Inert by design: pointer-events off means it
+   can never open the panel by being tapped, and never eats a corner tap that
+   lands on top of it. */
+.hint {
+  flex: 0 0 auto;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  color: var(--ink-soft);
+  opacity: 0.62;
+  line-height: 1.35;
+  padding: 0 6px;
+}
+
+.hint-label {
+  font-size: clamp(10px, 1.4vh, 12px);
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.hint-steps {
+  font-size: clamp(11px, 1.5vh, 13px);
+}
+
+.hint-steps b {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* Invisible caregiver corners. No hover, no cursor, no visual trace: a stray
    tap here must produce nothing at all. */
 .corner {

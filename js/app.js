@@ -305,6 +305,25 @@ function screenHome() {
     tiles
   );
 
+  // The way back into the caregiver screen, written down. The code cannot be
+  // stumbled into and cannot be discovered, which also makes it easy to lose;
+  // this line is small, English, and inert - it cannot be tapped, so it can
+  // neither open the panel nor break a code being entered over it.
+  if (store.settings().showHint) {
+    screen.append(
+      el('div', { class: 'hint' },
+        el('div', { class: 'hint-label', text: 'Caregiver settings' }),
+        el('div', { class: 'hint-steps' },
+          'tap the corners ',
+          el('b', { text: 'top-left' }), ' → ',
+          el('b', { text: 'bottom-right' }), ' → ',
+          el('b', { text: 'top-right' }), ' → ',
+          el('b', { text: 'bottom-left' })
+        )
+      )
+    );
+  }
+
   // Invisible caregiver corners live only on the home screen.
   for (const c of ['tl', 'tr', 'bl', 'br']) {
     screen.append(
@@ -493,7 +512,7 @@ function sentencePicture(s, size = 'ico') {
 
 /**
  * Every fourth card, test what was just shown. Retrieval right after exposure
- * is what turns a sentence he can repeat into one he recognises.
+ * is what turns a sentence the learner can repeat into one they recognise.
  */
 function buildSentenceQuiz() {
   // Some frames need three glyphs to show subject, verb and tense, which will
@@ -509,7 +528,7 @@ function buildSentenceQuiz() {
   const seenKeys = new Set([`${target.icon}|${visualKey(target.word)}`]);
   const picks = [];
   // Distractors from the same recent batch first, so the choice is between
-  // sentences he has actually just met. Sharing a noun with a different verb
+  // sentences the learner has actually just met. Sharing a noun with a different verb
   // is the most useful contrast, so those are not filtered out.
   for (const s of shuffle(recent).concat(shuffle(state.deck.filter((x) => x.quizzable)))) {
     if (picks.length >= n - 1) break;
@@ -567,8 +586,9 @@ function screenSentenceQuiz() {
 
 function screenCard(kind) {
   const isLong = kind !== 'word';
-  // With the scaffold off, the Hindi is the prompt and the English is what he
-  // has to come up with. Nothing is marked; he says it, then checks himself.
+  // With the scaffold off, the Hindi is the prompt and the English is what the
+  // learner has to come up with. Nothing is marked; they say it, then check
+  // themselves.
   const hideEnglish = store.settings().reveal === 'hindi' && !state.revealed;
   const item = state.deck[state.deckIndex];
   if (!item) return screenHome();
@@ -775,11 +795,11 @@ function screenAdmin() {
 
   levelPanel.append(
     el('div', { class: 'note' },
-      'The level sets how hard the Hindi and English are, not which buttons he '
-      + 'sees - every mode is always there. Each level keeps everything below '
-      + 'it, so moving up widens what he meets rather than replacing it. Move up '
-      + 'when the sentences at this level have stopped teaching him anything; '
-      + 'the accuracy figures below are the best evidence for that.'
+      'The level sets how hard the Hindi and English are, not which buttons the '
+      + 'learner sees - every mode is always there. Each level keeps everything '
+      + 'below it, so moving up widens what they meet rather than replacing it. '
+      + 'Move up when the sentences at this level have stopped teaching them '
+      + 'anything; the accuracy figures below are the best evidence for that.'
     )
   );
 
@@ -858,8 +878,9 @@ function screenAdmin() {
   voicePanel.append(
     el('div', { class: 'note' },
       'Showing both is the gentler setting and the way to learn something new. '
-      + 'Hiding the English turns every card into a test he marks himself: the '
-      + 'Hindi is spoken, he says the English, then taps the eye to check. It is '
+      + 'Hiding the English turns every card into a test the learner marks '
+      + 'themselves: the Hindi is spoken, they say the English, then tap the eye '
+      + 'to check. It is '
       + 'the single biggest step up in difficulty here, and it does not change '
       + 'the words at all - only how much help is on the screen.'
     )
@@ -1027,7 +1048,7 @@ function screenAdmin() {
       el('div', { class: 'note', style: 'margin-top:10px' },
         'Every tap counts, so a question answered wrongly once and then correctly '
         + 'scores 50%. Consistently above about 90% in a section means it has '
-        + 'stopped stretching him - raise the level, or the number of pictures.'
+        + 'stopped stretching them - raise the level, or the number of pictures.'
       )
     );
   }
@@ -1045,6 +1066,14 @@ function screenAdmin() {
         el('strong', { text: 'top-left → bottom-right → top-right → bottom-left' }),
         '. Nothing on screen reacts until the full sequence is correct, so it ' +
         'cannot be stumbled into, and a half-finished attempt is invisible.'
+      ),
+      row('Show a reminder on the home screen', toggleBtn('showHint')),
+      el('div', { class: 'note' },
+        'The reminder is a small line of English at the foot of the home screen. '
+        + 'It cannot be tapped, so it opens nothing and cannot interfere with the '
+        + 'corner taps. Turn it off if the learner reads it and starts trying the '
+        + 'corners, or once the code is remembered - but write it down somewhere '
+        + 'first, because there is no other way in.'
       )
     ),
     el('div', { style: 'padding:18px 0 30px' },
