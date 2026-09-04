@@ -695,6 +695,7 @@ button {
 .admin .level-body { min-width: 0; }
 .admin .level-name { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 18px; font-weight: 700; }
 .admin .level-en { font-weight: 600; color: var(--ink-soft); font-size: 15px; }
+.admin .level-count { font-size: 12px; color: var(--ink-soft); margin-left: auto; }
 .admin .level-ready {
   font-size: 12px;
   text-transform: uppercase;

@@ -61,27 +61,25 @@ plus endlessly generated shop transactions.
 
 ## Levels
 
-Everything does not arrive at once. Four levels, each adding to the one before
-and never taking anything away:
+The level sets **how hard the language is**, not which buttons appear. Every
+mode is always available; what changes is the grammar the sentences are built
+from. Each level keeps everything below it, so moving up widens what the
+learner meets rather than replacing it.
 
-| | | What it adds |
-| --- | --- | --- |
-| 1 | शब्द | Pictures, words, listening, reading, everyday phrases. |
-| 2 | वाक्य | Whole sentences: past and present, three verbs. 311 of them. |
-| 3 | और वाक्य | Future, continuous, negatives, he and she, questions, going places. Ten verbs, 2,159 sentences. |
-| 4 | पैसे | Shopping: prices, paying, and working out the change. |
+| | | | Sentences |
+| --- | --- | --- | --- |
+| 1 | यह क्या है | Naming - no tenses | 153 |
+| 2 | बीता कल | Past and present, three verbs | 311 |
+| 3 | आने वाला कल | Future and continuous, eight verbs | 815 |
+| 4 | वह और नहीं | He, she, and negatives | 1,657 |
+| 5 | सवाल और जगहें | Questions, and going places | 2,159 |
 
-**The caregiver sets the level; the app never changes it.** The caregiver screen
-shows how far off the next one is - words learned, questions answered, accuracy
-- and marks a level *ready* when those are met, but a tile appearing on its own
-mid-session is exactly the kind of surprise that ends a session, and a number is
-a worse judge of readiness than the person sitting alongside.
+The caregiver sets it; the app never moves it. The per-section accuracy figures
+further down that screen are the evidence for when to move: consistently above
+about 90% in a section means it has stopped stretching him.
 
-At level 1 the home screen is the original four tiles, which is a calmer place
-to start than six.
-
-Levels arrived after the app was already in use, so anyone with existing
-progress keeps every mode they had; only a fresh install begins at level 1.
+Levels arrived after the app was already in use, so an existing install starts
+at level 5 with everything it already had, and can be moved down deliberately.
 
 ---
 

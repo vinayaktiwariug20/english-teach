@@ -302,34 +302,34 @@ const FRAMES = [
     en: (v, o) => `I will ${v.en.base} ${o} tomorrow.`,
     hi: (v, o, m, g) => `कल मैं ${o} ${v.hi.fut1[g]}।` },
 
-  { id: 'iPastNeg', level: 3, mark: '❌',
+  { id: 'iPastNeg', level: 4, mark: '❌',
     en: (v, o) => `I did not ${v.en.base} ${o}.`,
     hi: (v, o, m) => `मैंने ${o} नहीं ${v.hi.perf[`${m.g}.${m.n}`]}।` },
 
-  { id: 'hePast', level: 3, sub: '👨', mark: '⏪', quiz: false,
+  { id: 'hePast', level: 4, sub: '👨', mark: '⏪', quiz: false,
     en: (v, o) => `He ${v.en.past} ${o} yesterday.`,
     hi: (v, o, m) => `कल उसने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}।` },
 
-  { id: 'hePresent', level: 3, sub: '👨',
+  { id: 'hePresent', level: 4, sub: '👨',
     en: (v, o) => `He ${v.en.s} ${o}.`,
     hi: (v, o) => `वह ${o} ${v.hi.imperf.m} है।` },
 
-  { id: 'shePresent', level: 3, sub: '👩',
+  { id: 'shePresent', level: 4, sub: '👩',
     en: (v, o) => `She ${v.en.s} ${o}.`,
     hi: (v, o) => `वह ${o} ${v.hi.imperf.f} है।` },
 
-  { id: 'heProg', level: 3, sub: '👨', mark: '▶️', quiz: false,
+  { id: 'heProg', level: 4, sub: '👨', mark: '▶️', quiz: false,
     en: (v, o) => `He is ${v.en.ing} ${o}.`,
     hi: (v, o) => `वह ${o} ${v.hi.prog.m} है।` },
 
   // Questions are addressed to "you". The past question is the safest one to
   // teach first: तुमने takes the ergative, so the verb agrees with the object
   // and the listener's own gender never enters into it.
-  { id: 'youPastQ', level: 3, mark: '❓',
+  { id: 'youPastQ', level: 5, mark: '❓',
     en: (v, o) => `Did you ${v.en.base} ${o}?`,
     hi: (v, o, m) => `क्या तुमने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}?` },
 
-  { id: 'youFutureQ', level: 3, mark: '⏩❓', quiz: false,
+  { id: 'youFutureQ', level: 5, mark: '⏩❓', quiz: false,
     en: (v, o) => `Will you ${v.en.base} ${o} tomorrow?`,
     hi: (v, o) => `क्या तुम कल ${o} ${v.hi.fut2.m}?` }
 ];
@@ -369,14 +369,14 @@ const MOTION_FRAMES = [
 
 // Standalone sentences that are not built from a verb table.
 const TEMPLATES = [
-  { id: 'want', level: 2, use: 'want', article: true, icon: '🤲',
+  { id: 'want', level: 1, use: 'want', article: true, icon: '🤲',
     en: 'I want {obj}.', hi: 'मुझे {obj} चाहिए।' },
-  { id: 'wantQ', level: 3, use: 'want', article: true, icon: '🤲❓',
+  { id: 'wantQ', level: 5, use: 'want', article: true, icon: '🤲❓',
     en: 'Do you want {obj}?', hi: 'क्या तुम्हें {obj} चाहिए?' },
-  { id: 'like', level: 2, use: 'like', article: false, icon: '❤️',
+  { id: 'like', level: 1, use: 'like', article: false, icon: '❤️',
     en: 'I like this {obj}.', hi: 'मुझे यह {obj} पसंद है।',
     enPl: 'I like these {obj}.', hiPl: 'मुझे ये {obj} पसंद हैं।' },
-  { id: 'this', level: 2, use: 'this', article: true, icon: '👉',
+  { id: 'this', level: 1, use: 'this', article: true, icon: '👉',
     en: 'This is {obj}.', hi: 'यह {obj} है।',
     enPl: 'These are {obj}.', hiPl: 'ये {obj} हैं।' }
 ];
@@ -433,9 +433,9 @@ export function buildSentences(words, { learnerGender = 'm', level = 99 } = {}) 
     }
   }
 
-  // Motion verbs and places arrive together at level 3.
+  // Motion verbs and places arrive together, at the top level.
   for (const [verbId, v] of Object.entries(MOTION)) {
-    if (level < 3) break;
+    if (level < 5) break;
     for (const frame of MOTION_FRAMES) {
       for (const [nounId, meta] of Object.entries(NOUNS)) {
         if (!meta.use.includes('go') || !meta.to) continue;

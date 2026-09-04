@@ -25,7 +25,7 @@ const DEFAULTS = {
   },
   // item id -> { seen, ok, bad, last }
   progress: {},
-  stats: { sessions: 0, answers: 0, correct: 0 }
+  stats: { sessions: 0, answers: 0, correct: 0, byMode: {} }
 };
 
 function clone(o) {
@@ -42,16 +42,16 @@ function load() {
     const loaded = {
       settings: { ...DEFAULTS.settings, ...(parsed.settings || {}) },
       progress: parsed.progress || {},
-      stats: { ...DEFAULTS.stats, ...(parsed.stats || {}) }
+      stats: { ...DEFAULTS.stats, byMode: {}, ...(parsed.stats || {}) }
     };
 
-    // Levels arrived after people were already using every mode. Someone with
-    // existing progress keeps everything they had; only a fresh install starts
-    // at level 1. Taking modes away from a working app would be a regression
+    // Levels arrived after people were already using the full sentence set, so
+    // anyone with existing progress starts at the top and can be moved down
+    // deliberately. Quietly narrowing a working app would be a regression
     // dressed up as a feature.
     if (parsed.settings && parsed.settings.level === undefined
         && Object.keys(loaded.progress).length > 0) {
-      loaded.settings.level = 4;
+      loaded.settings.level = 5;
     }
     return loaded;
   } catch (_) {
@@ -98,15 +98,24 @@ export function noteSeen(id) {
   save();
 }
 
-export function noteAnswer(id, correct) {
+export function noteAnswer(id, correct, mode = 'other') {
   const s = wordStat(id);
   s.seen += 1;
   s.last = Date.now();
   if (correct) s.ok += 1;
   else s.bad += 1;
   state.progress[id] = s;
+
   state.stats.answers += 1;
   if (correct) state.stats.correct += 1;
+
+  // Per-mode, because one overall figure cannot answer "is this still hard
+  // enough for him" - he may be at ceiling in one mode and struggling in
+  // another, and the average hides both.
+  const m = (state.stats.byMode[mode] ||= { answers: 0, correct: 0 });
+  m.answers += 1;
+  if (correct) m.correct += 1;
+
   save();
 }
 
@@ -150,31 +159,6 @@ export function chooseTarget(pool, exclude = []) {
     if (r <= 0) return s.w;
   }
   return scored[scored.length - 1].w;
-}
-
-// What each level asks of the learner before the next one is worth trying.
-// These are a signal for the caregiver, not a gate - the app never moves the
-// level by itself, because new tiles appearing mid-session is precisely the
-// kind of surprise this app is built to avoid.
-const LEVEL_BAR = {
-  2: { words: 30, answers: 100, accuracy: 0.7 },
-  3: { words: 60, answers: 300, accuracy: 0.75 },
-  4: { words: 80, answers: 500, accuracy: 0.75 }
-};
-
-export function levelProgress(knownCount) {
-  const { answers, correct } = state.stats;
-  const accuracy = answers ? correct / answers : 0;
-  const out = {};
-  for (const [lvl, bar] of Object.entries(LEVEL_BAR)) {
-    out[lvl] = {
-      ready: knownCount >= bar.words && answers >= bar.answers && accuracy >= bar.accuracy,
-      words: [knownCount, bar.words],
-      answers: [answers, bar.answers],
-      accuracy: [Math.round(accuracy * 100), Math.round(bar.accuracy * 100)]
-    };
-  }
-  return out;
 }
 
 /** How many answer choices to show, based on recent accuracy. */
