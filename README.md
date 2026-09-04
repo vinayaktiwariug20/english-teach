@@ -45,6 +45,13 @@ plus endlessly generated shop transactions.
 - **Difficulty adjusts itself**, starting at 2 pictures and widening to 3 or 4
   only once the learner is answering most questions correctly. Words unseen or
   recently missed come around more often.
+- **A wrong answer is never eliminable on sight.** Words are drawn three
+  different ways - a picture, a colour disc, a numeral - and that lines up
+  almost exactly with the topic, so a question mixing them could be answered
+  without listening: hear a colour, pick the only disc. Distractors therefore
+  come from the target's own drawing style first. Measured over 10,000
+  questions, this was happening in 31% of two-picture questions and is now 0%
+  at every level; `js/quiz.js` holds the rule.
 
 ---
 
@@ -383,6 +390,7 @@ css/app.css           all styling
 js/data.js            vocabulary and phrases (hand-written)
 js/sentences.js       sentence templates and noun grammar tags
 js/money.js           shop transactions and Hindi number words
+js/quiz.js            question building for Listen and Read
 js/generated.js       approved model-drafted content, compiled by merge.py
 js/app.js             screens, quiz logic, the caregiver corner code
 js/speech.js          text-to-speech and the sound effects

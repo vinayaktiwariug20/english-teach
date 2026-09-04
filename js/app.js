@@ -1,6 +1,7 @@
 import { CATEGORIES, WORDS, PHRASES, READING_WORDS } from './data.js';
 import { buildSentences, shoppableNouns } from './sentences.js';
 import { buildTransaction, changeOptions, hindiNumber } from './money.js';
+import { buildQuestion, visualKey, shuffle } from './quiz.js';
 import * as sp from './speech.js';
 import * as store from './store.js';
 
@@ -147,45 +148,6 @@ function readingPool() {
   const cats = enabledCats();
   const pool = READING_WORDS.filter((w) => cats.includes(w.cat));
   return pool.length >= 4 ? pool : READING_WORDS;
-}
-
-function visualKey(w) {
-  return w.emoji || w.swatch || `#${w.num}`;
-}
-
-function shuffle(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-/** Build a question: one target plus distractors that never look alike. */
-function buildQuestion(pool) {
-  const target = store.chooseTarget(pool, state.recent);
-  const n = Math.min(store.choiceCount(), pool.length);
-
-  const used = new Set([visualKey(target)]);
-  const distractors = [];
-  // Prefer same-category distractors once the learner is doing well; they make
-  // the choice a real discrimination rather than a guess.
-  const sameCat = shuffle(pool.filter((w) => w.cat === target.cat && w.id !== target.id));
-  const others = shuffle(pool.filter((w) => w.cat !== target.cat));
-  const order = n >= 3 ? [...sameCat, ...others] : [...others, ...sameCat];
-
-  for (const w of order) {
-    if (distractors.length >= n - 1) break;
-    const key = visualKey(w);
-    if (used.has(key)) continue;
-    used.add(key);
-    distractors.push(w);
-  }
-
-  state.target = target;
-  state.choices = shuffle([target, ...distractors]);
-  state.recent = [target.id, ...state.recent].slice(0, 6);
 }
 
 // ---------------------------------------------------------------------------
@@ -612,10 +574,17 @@ function screenCard(kind) {
 
 // --- quiz modes (Listen, Read) --------------------------------------------
 
-function startQuiz(mode) {
+function askQuestion(mode) {
   const pool = mode === 'read' ? readingPool() : activeWords();
+  const q = buildQuestion(pool, state.recent);
+  state.target = q.target;
+  state.choices = q.choices;
+  state.recent = q.recent;
+}
+
+function startQuiz(mode) {
   state.recent = [];
-  buildQuestion(pool);
+  askQuestion(mode);
   go(mode);
 }
 
@@ -625,7 +594,7 @@ function nextQuestion(mode) {
   // straight to render(), so without this the very next tap is swallowed and
   // the quiz appears to freeze after one answer.
   state.locked = false;
-  buildQuestion(mode === 'read' ? readingPool() : activeWords());
+  askQuestion(mode);
   render();
 }
 

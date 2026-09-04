@@ -2,7 +2,7 @@
 // network again, which is what makes it usable with no signal and guarantees
 // nothing can ever inject an ad into it.
 
-const CACHE = 'english-teach-v16';
+const CACHE = 'english-teach-v17';
 
 const ASSETS = [
   './',
@@ -12,6 +12,7 @@ const ASSETS = [
   './js/data.js',
   './js/sentences.js',
   './js/money.js',
+  './js/quiz.js',
   './js/generated.js',
   './js/speech.js',
   './js/store.js',
