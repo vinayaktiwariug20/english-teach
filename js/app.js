@@ -144,6 +144,22 @@ function activeWords() {
   return pool.length >= 4 ? pool : WORDS;
 }
 
+/**
+ * The pool the picture quizzes draw from.
+ *
+ * Numbers are held out by default. They are twenty of the words but a different
+ * kind of task - matching a spoken number to a numeral is arithmetic reading,
+ * not vocabulary - and they already get worked hard in Money and can be drilled
+ * on their own in Words. Left in, they were about a tenth of every Listen
+ * session.
+ */
+function quizWords() {
+  const pool = activeWords();
+  if (store.settings().numbersInQuiz) return pool;
+  const without = pool.filter((w) => w.cat !== 'numbers');
+  return without.length >= 4 ? without : pool;
+}
+
 function readingPool() {
   const cats = enabledCats();
   const pool = READING_WORDS.filter((w) => cats.includes(w.cat));
@@ -575,7 +591,7 @@ function screenCard(kind) {
 // --- quiz modes (Listen, Read) --------------------------------------------
 
 function askQuestion(mode) {
-  const pool = mode === 'read' ? readingPool() : activeWords();
+  const pool = mode === 'read' ? readingPool() : quizWords();
   const q = buildQuestion(pool, state.recent);
   state.target = q.target;
   state.choices = q.choices;
@@ -820,9 +836,12 @@ function screenAdmin() {
     el('div', { class: 'panel' },
       row('Answer choices', choiceSelect),
       row('Highest price in Money', moneySelect),
+      row('Numbers in Listen', toggleBtn('numbersInQuiz')),
       el('div', { class: 'note' },
         'Automatic starts at 2 pictures and only widens to 3 or 4 once the learner ' +
-        'is answering most questions correctly.'
+        'is answering most questions correctly. Numbers are kept out of Listen by ' +
+        'default - they are practised in Money and in Words instead, and left in ' +
+        'they take up about a tenth of every session.'
       )
     )
   );

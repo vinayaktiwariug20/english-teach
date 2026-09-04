@@ -19,6 +19,7 @@ const DEFAULTS = {
     preferLocalVoice: true,
     choices: 'auto',      // 'auto' | 2 | 3 | 4
     moneyMax: 10,         // highest price in the shopping mode
+    numbersInQuiz: false, // keep counting out of the picture quizzes
     categories: null      // null = all enabled, else array of category ids
   },
   // item id -> { seen, ok, bad, last }

@@ -52,6 +52,10 @@ plus endlessly generated shop transactions.
   come from the target's own drawing style first. Measured over 10,000
   questions, this was happening in 31% of two-picture questions and is now 0%
   at every level; `js/quiz.js` holds the rule.
+- **Numbers are held out of Listen** by default. Matching a spoken number to a
+  numeral is arithmetic reading rather than vocabulary, and at twenty words they
+  were about a tenth of every session. They are practised in Money, and on their
+  own in Words. A caregiver switch puts them back.
 
 ---
 
