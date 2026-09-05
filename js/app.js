@@ -1,7 +1,7 @@
 import { CATEGORIES, WORDS, PHRASES, READING_WORDS } from './data.js';
 import { buildSentences, shoppableNouns } from './sentences.js';
 import { buildTransaction, changeOptions, hindiNumber } from './money.js';
-import { NOTES, moneyInPlay, tender, hindiValue, noteFor } from './notes.js';
+import { NOTES, moneyInPlay, tender, hindiValue, noteFor, photoFor } from './notes.js';
 import { buildQuestion, visualKey, shuffle } from './quiz.js';
 import * as sp from './speech.js';
 import * as store from './store.js';
@@ -500,25 +500,46 @@ function coins(n) {
 }
 
 /**
- * One note, drawn.
+ * One note: a photograph if one has been supplied for this denomination,
+ * otherwise the drawing.
  *
- * The aspect ratio is the real one - a ₹500 note is longer than a ₹10 note,
- * and length is half of how a note is recognised in a hand. Colour is the
- * other half, and neither of them is the numeral.
+ * Both go in a box of the note's real proportions - a ₹500 is longer than a
+ * ₹10, and length is half of how a note is recognised in a hand - so the
+ * layout is the same either way and swapping one for the other cannot break
+ * anything that was measured. A photograph that fails to load reverts to the
+ * drawing in place, so a missing or misnamed file costs nothing.
  */
 function noteNode(value, size = 'ico') {
   const n = noteFor(value);
   if (!n) return coinNode(value, size);
-  return el('div', {
-    class: `rnote ${size === 'ico' ? 'rnote-ico' : 'rnote-pic'}`,
-    style: `--bg:${n.bg};--ink:${n.ink};--mm:${n.mm};aspect-ratio:${n.mm}/63`
-  },
+
+  const cls = `rnote ${size === 'ico' ? 'rnote-ico' : 'rnote-pic'}`;
+  const style = `--bg:${n.bg};--ink:${n.ink};--mm:${n.mm};aspect-ratio:${n.mm}/63`;
+
+  const drawn = () => el('div', { class: cls, style },
     el('div', { class: 'rnote-val' },
       el('span', { class: 'rnote-rupee', text: '₹' }),
       String(value)
     ),
     el('div', { class: 'rnote-hi hi', text: hindiValue(value) })
   );
+
+  const src = photoFor(value);
+  if (!src) return drawn();
+
+  const wrap = el('div', { class: `${cls} rnote-photo`, style });
+  const img = el('img', {
+    src,
+    alt: `${value} rupees`,
+    // Decorative in the sense that matters: the question is answered by
+    // looking, and the amount is spoken aloud, so nothing is lost if it
+    // never arrives.
+    loading: 'eager',
+    decoding: 'async'
+  });
+  img.addEventListener('error', () => wrap.replaceWith(drawn()));
+  wrap.append(img);
+  return wrap;
 }
 
 function coinNode(value, size = 'ico') {

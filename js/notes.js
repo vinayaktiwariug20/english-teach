@@ -1,16 +1,26 @@
-// Indian rupee notes and coins, drawn rather than photographed.
+// Indian rupee notes and coins.
 //
-// Three reasons it is drawn. Photographs of banknotes are restricted -
-// reproducing currency is not something to do casually in a file that gets
-// pushed to a public repository. Nothing else in this app is a bitmap, and
-// adding a folder of JPEGs would make the offline cache many times its size
-// for the first time. And most usefully: colour and length are how a note is
-// actually told apart at a shop counter. Nobody reads the denomination. They
-// see brown-and-small or grey-and-long, so those are the two things the
-// drawing has to get right, and a photograph would carry a great deal of
-// detail that is not the lesson.
+// A photograph is the better teaching picture, and the app prefers one wherever
+// it has been given one. Recognising a note is a transfer task - the point is
+// the object in a hand at a shop counter - and transfer from a stylised drawing
+// to the real thing cannot be assumed, least of all for a learner who takes
+// things literally. Depicting currency for teaching is ordinary; Indian school
+// textbooks are full of it. What the law is aimed at is a reproduction that
+// could pass as money, which a hundred-pixel picture on a phone is not.
 //
-// The lengths below are the real ones in millimetres, kept in proportion, so
+// The reason the drawings exist and are the default is licensing, not legality.
+// An image found online is almost always somebody's copyright, and the current
+// series is a Government of India work besides, so it cannot simply be
+// committed to a public repository. Photographs you took yourself of the notes
+// in your own wallet carry no such problem - and they are the notes actually in
+// circulation where the learner lives, which a generic drawing can never be.
+//
+// So: add a file, add a line to NOTE_PHOTOS, and that denomination becomes a
+// photograph. Anything not listed stays drawn, and an image that fails to load
+// falls back to the drawing rather than leaving a hole.
+//
+// The drawings get the two things that carry the recognition: colour, and
+// length. The lengths below are the real millimetres, kept in proportion, so
 // bigger money is a longer note here exactly as it is in a hand.
 
 export const NOTES = [
@@ -33,6 +43,26 @@ const HI_NOTE = {
 
 export function hindiValue(v) {
   return HI_NOTE[v] || String(v);
+}
+
+/**
+ * Photographs, by denomination. Empty by default.
+ *
+ * Put the file in images/notes/ and name it here, e.g.
+ *
+ *   export const NOTE_PHOTOS = {
+ *     10: './images/notes/10.jpg',
+ *     20: './images/notes/20.jpg'
+ *   };
+ *
+ * One side, in focus, filling the frame. The app crops to the note's real
+ * proportions, so a straight-on photograph needs no trimming. Denominations
+ * left out keep the drawing, so a half-finished set is fine.
+ */
+export const NOTE_PHOTOS = {};
+
+export function photoFor(value) {
+  return NOTE_PHOTOS[value] || null;
 }
 
 export function noteFor(value) {

@@ -323,23 +323,50 @@ caregiver screen turns it off.
 
 ## Rupee notes
 
-Drawn, not photographed. Photographs of banknotes are restricted and not
-something to push to a public repository casually; nothing else here is a
-bitmap, and a folder of JPEGs would multiply the offline cache. Most usefully,
-colour and length are how a note is actually told apart at a counter - nobody
-reads the denomination - so those are the two things the drawing has to get
-right, and a photograph carries a great deal that is not the lesson. The
-aspect ratios are the real millimetres, so a ₹500 is visibly longer than a ₹10.
+A photograph is the better teaching picture and the app prefers one wherever it
+has been given one. Recognising a note is a transfer task — the point is the
+object in a hand at a counter — and transfer from a stylised drawing to the real
+thing cannot be assumed, least of all for a learner who takes things literally.
+Depicting currency for teaching is ordinary; Indian school textbooks are full of
+it. What the law is aimed at is a reproduction that could pass as money, which a
+hundred-pixel picture on a phone is not.
+
+The reason the drawings exist and are the default is **licensing, not
+legality**. An image found online is almost always somebody's copyright, and
+the current series is a Government of India work besides, so it cannot simply be
+committed to a public repository. Photographs you took yourself of the notes in
+your own wallet carry no such problem — and they are the notes actually in
+circulation where the learner lives, which a generic drawing can never be.
+
+To use photographs, put files in `images/notes/` and name them in `NOTE_PHOTOS`
+in `js/notes.js`. See `images/notes/README.md`. Denominations left out keep the
+drawing, and an image that fails to load falls back to the drawing in place, so
+a partial or misnamed set costs nothing.
+
+The drawings get the two things that carry the recognition: colour, and length.
+The aspect ratios are the real millimetres, so a ₹500 is visibly longer than a
+₹10, and a photograph is cropped into the same box — layout is identical either
+way, so every size measured for the drawings still holds.
 
 Notes appear twice: under the steps about having, giving and bringing money
-home, and as their own question - the amount is spoken, and the note is picked.
-Distractors are the neighbouring denominations, because those are the ones
-confused in a hand.
+home, and as their own question, where the amount is spoken and the note is
+picked. Distractors are the neighbouring denominations, because those are the
+ones confused in a hand.
 
 The price step deliberately shows no note. A price is a number on a shelf, not
 money in a hand, and drawing a note there would suggest you pay the exact
 amount, which is the one thing the whole sequence exists to teach you need not
 do.
+
+### Sizing, and a trap
+
+The note's height comes from its tile's width, through the aspect ratio. The
+text on it was originally sized in `vh` — a quantity with nothing to do with the
+note's height — so on a tall narrow phone the words were half again taller than
+the note holding them, and `overflow: hidden` swallowed the difference without a
+word. The type is now `cqh`, a percentage of the note's own height, which is the
+right unit. The `vw` values above it in the file are the fallback for browsers
+without container queries; both paths are measured by `tools/note-check.html`.
 
 ## Taking the scaffold away
 

@@ -674,7 +674,9 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  /* No gap: on the fallback sizing path the two lines plus a 2px gap were
+     exactly 2px taller than the note. The line boxes already separate them. */
+  gap: 0;
   flex: 0 0 auto;
   overflow: hidden;
 }
@@ -703,10 +705,40 @@ button {
 
 .rnote-hi { line-height: 1; opacity: 0.92; }
 
-.rnote-ico .rnote-val { font-size: clamp(13px, 2.4vh, 22px); }
-.rnote-ico .rnote-hi  { font-size: clamp(8px, 1.4vh, 13px); }
-.rnote-pic .rnote-val { font-size: clamp(24px, 5.4vh, 54px); }
-.rnote-pic .rnote-hi  { font-size: clamp(12px, 2.4vh, 24px); }
+/* The text has to be sized off the NOTE, not off the viewport.
+   The note's height comes from its tile's width via the aspect ratio, and the
+   type was sized in vh - two quantities with nothing to do with each other, so
+   on a tall narrow phone the words were half again taller than the box holding
+   them and `overflow: hidden` swallowed the difference in silence.
+
+   cqh is a percentage of the note's own height, which is exactly the right
+   unit. The vw values above it are the fallback for browsers without container
+   queries, and are deliberately sized for the tightest case - the three-across
+   grid - so they are safe everywhere rather than optimal anywhere. */
+.rnote { container-type: size; }
+
+.rnote-ico .rnote-val { font-size: min(clamp(10px, 2.4vh, 22px), 4vw); }
+.rnote-ico .rnote-hi  { font-size: min(clamp(7px, 1.4vh, 13px), 2.4vw); }
+.rnote-pic .rnote-val { font-size: min(clamp(12px, 5.4vh, 54px), 4.8vw); }
+.rnote-pic .rnote-hi  { font-size: min(clamp(7px, 2.4vh, 24px), 2.1vw); }
+
+.rnote-ico .rnote-val { font-size: 34cqh; }
+.rnote-ico .rnote-hi  { font-size: 19cqh; }
+.rnote-pic .rnote-val { font-size: 34cqh; }
+.rnote-pic .rnote-hi  { font-size: 19cqh; }
+
+/* A photograph fills the same box the drawing would have occupied, cropped to
+   the note's real proportions. Layout is therefore identical whether a note is
+   drawn or photographed, and every size measured for the drawings still holds. */
+.rnote-photo { padding: 0; }
+
+.rnote-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+}
 
 .rcoin {
   border-radius: 50%;

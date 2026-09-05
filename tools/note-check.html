@@ -69,7 +69,12 @@ window.measure = () => ({
       v: t.textContent.trim(),
       w: Math.round(nr.width), tileW: Math.round(tr.width),
       h: Math.round(nr.height), tileH: Math.round(tr.height),
-      clipped: nr.width > tr.width + 1 || nr.height > tr.height + 1
+      clipped: nr.width > tr.width + 1 || nr.height > tr.height + 1,
+      // the failure that hid behind overflow:hidden - the words are taller
+      // than the note they are printed on
+      textClipped: t.querySelector('.rnote')
+        ? t.querySelector('.rnote').scrollHeight - t.querySelector('.rnote').clientHeight
+        : 0
     };
   }),
   tender: {
