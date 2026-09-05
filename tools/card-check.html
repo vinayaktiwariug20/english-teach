@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card overflow check</title>
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+// Renders one card per sentence SHAPE and measures every glyph against the
+// viewport. The card modes are where three-glyph icons live, and a choice tile
+// never shows them - so nothing in the quiz path can catch this.
+import { WORDS } from '../js/data.js';
+import { buildSentences } from '../js/sentences.js';
+
+const el = (t, p = {}, ...k) => {
+  const n = document.createElement(t);
+  for (const [a, v] of Object.entries(p)) {
+    if (a === 'class') n.className = v; else if (a === 'text') n.textContent = v;
+    else n.setAttribute(a, v);
+  }
+  for (const c of k.flat()) if (c != null) n.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return n;
+};
+
+const glyphCount = (i) => [...String(i || '').replace(/\uFE0F/g, '')].length;
+
+function pictureNode(w) {
+  if (w.swatch) return el('div', { class: 'pic-swatch', style: `background:${w.swatch}` });
+  if (w.num) return el('div', { class: 'pic-num', text: w.num });
+  return el('div', { class: 'emoji pic', text: w.emoji });
+}
+
+function sentencePicture(s) {
+  if (s.pair) {
+    const n = el('div', { class: 'sent-pic two' });
+    for (const p of s.pair) {
+      n.append(el('span', { class: 'emoji pic verb', text: p.icon }), pictureNode(p.word));
+    }
+    return n;
+  }
+  return el('div', { class: `sent-pic g${Math.min(3, glyphCount(s.icon))}` },
+    el('span', { class: 'emoji pic verb', text: s.icon }), pictureNode(s.word));
+}
+
+const all = buildSentences(WORDS, { learnerGender: 'm', level: 6 });
+
+// one representative per shape: the frame/verb template, and separately the
+// widest object each template can pair with
+const byTemplate = new Map();
+for (const s of all) {
+  const key = s.template;
+  if (!byTemplate.has(key)) byTemplate.set(key, s);
+}
+const cases = [...byTemplate.values()];
+
+const root = document.getElementById('root');
+window.checkAll = () => {
+  const fails = [];
+  for (const s of cases) {
+    root.replaceChildren();
+    const card = el('div', { class: 'card' },
+      sentencePicture(s),
+      el('div', { class: 'word-en phrase', text: s.en }),
+      el('div', { class: 'word-hi hi phrase', text: s.hi })
+    );
+    root.append(el('div', { class: 'screen' },
+      el('div', { class: 'topbar' }, el('button', { class: 'home-btn emoji' }, '\u{1f3e0}')),
+      card,
+      el('div', { class: 'actions' },
+        el('button', { class: 'act act-hear' }, el('span', { class: 'ico emoji', text: '\u{1f50a}' })),
+        el('button', { class: 'act act-hindi' }, 'हिंदी'),
+        el('button', { class: 'act act-next' }, el('span', { class: 'arrow', text: '\u2192' })))
+    ));
+    const over = [];
+    for (const n of root.querySelectorAll('.sent-pic *, .word-en, .word-hi')) {
+      const r = n.getBoundingClientRect();
+      if (r.right > innerWidth + 0.5 || r.left < -0.5) {
+        over.push(`${n.className}[${(n.textContent || '').slice(0, 12)}] ${Math.round(r.left)}..${Math.round(r.right)}`);
+      }
+    }
+    const body = document.body.scrollWidth - innerWidth;
+    if (over.length || body > 0) {
+      fails.push({ template: s.template, icon: s.icon, glyphs: glyphCount(s.icon),
+                   en: s.en.slice(0, 40), over, bodyX: body });
+    }
+  }
+  root.replaceChildren();
+  return { view: `${innerWidth}x${innerHeight}`, cases: cases.length, failures: fails.length, fails: fails.slice(0, 8) };
+};
+</script>
+</body></html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Note layout check</title>
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+// A layout harness, not part of the app: it renders the money pictures in the
+// exact DOM the quiz builds so their size can be measured against their tile
+// without playing through a transaction to reach one.
+import { NOTES, tender, hindiValue } from '../js/notes.js';
+
+const el = (tag, props = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v;
+    else n.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k != null) n.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return n;
+};
+
+function noteNode(value, size) {
+  const d = NOTES.find((n) => n.value === value);
+  return el('div', {
+    class: `rnote ${size === 'ico' ? 'rnote-ico' : 'rnote-pic'}`,
+    style: `--bg:${d.bg};--ink:${d.ink};--mm:${d.mm};aspect-ratio:${d.mm}/63`
+  },
+    el('div', { class: 'rnote-val' }, el('span', { class: 'rnote-rupee', text: '\u20b9' }), String(value)),
+    el('div', { class: 'rnote-hi hi', text: hindiValue(value) })
+  );
+}
+function coinNode(value, size) {
+  return el('div', { class: `rcoin ${size === 'ico' ? 'rcoin-ico' : 'rcoin-pic'}` },
+    el('span', { class: 'rcoin-val', text: `\u20b9${value}` }));
+}
+
+const n = Number(new URLSearchParams(location.search).get('n') || 4);
+const values = [10, 20, 50, 100, 200, 500].slice(0, n);
+
+const screen = el('div', { class: 'screen' },
+  el('div', { class: 'topbar' }, el('button', { class: 'home-btn emoji' }, '\u{1f3e0}')),
+  el('div', { class: 'prompt' },
+    el('div', { class: 'speaker emoji', text: '\u{1f50a}' }),
+    el('div', { class: 'ask-hi hi', text: '\u092a\u091a\u093e\u0938 \u0930\u0941\u092a\u090f' })
+  ),
+  el('div', { class: `choices n${n} note-choices` },
+    values.map((v) => el('button', { class: 'choice' }, noteNode(v, 'pic')))
+  )
+);
+document.getElementById('root').append(screen);
+
+// the tender strip, on the worst case the money mode can produce
+const strip = el('div', { class: 'tender' });
+for (const p of tender(Number(new URLSearchParams(location.search).get('t') || 90))) {
+  strip.append(p.kind === 'note' ? noteNode(p.value, 'ico') : coinNode(p.value, 'ico'));
+}
+screen.append(strip);
+
+window.measure = () => ({
+  view: `${innerWidth}x${innerHeight}`,
+  notes: [...document.querySelectorAll('.choice')].map((t) => {
+    const nr = t.querySelector('.rnote').getBoundingClientRect();
+    const tr = t.getBoundingClientRect();
+    return {
+      v: t.textContent.trim(),
+      w: Math.round(nr.width), tileW: Math.round(tr.width),
+      h: Math.round(nr.height), tileH: Math.round(tr.height),
+      clipped: nr.width > tr.width + 1 || nr.height > tr.height + 1
+    };
+  }),
+  tender: {
+    pieces: strip.children.length,
+    overflowsX: strip.scrollWidth > strip.clientWidth + 1,
+    widths: [...strip.children].map((c) => Math.round(c.getBoundingClientRect().width))
+  },
+  bodyOverflowX: document.body.scrollWidth - innerWidth,
+  bodyOverflowY: document.body.scrollHeight - innerHeight
+});
+</script>
+</body></html>

@@ -3,3 +3,8 @@ __pycache__/
 
 # Scratch notes, not part of the project
 continue.txt
+
+# Notes and documents about real people and organisations. This repository is
+# public; nothing identifying anyone belongs in it.
+*.docx
+*.pdf

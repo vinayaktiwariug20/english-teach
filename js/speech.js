@@ -219,6 +219,12 @@ export function chimeRetry() {
   tone(330, 0, 0.16, 0.07);
 }
 
+/** A word landing on the line. Quieter and shorter than anything else here,
+    because it fires four or five times inside one sentence. */
+export function chimeTick() {
+  tone(760, 0, 0.07, 0.05);
+}
+
 export function chimeCelebrate() {
   tone(660, 0, 0.16);
   tone(880, 0.12, 0.16);

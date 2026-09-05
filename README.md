@@ -264,6 +264,83 @@ so they can be met in Words and Listen before they turn up as change.
 
 ---
 
+## Review
+
+Every answer goes into a Leitner box. Answered correctly an item moves up a
+box and is next due in 1, 3, 7 then 16 days; answered wrongly it drops to the
+first box and comes back in the same session. `js/review.js` holds the policy
+and nothing else, so it can be tested without a browser.
+
+This exists because the complaint was never that anything was forgotten. It
+was that the app kept running out. A shuffled deck shows everything once and
+then shows it again in a different order, so "he has learnt all of it" really
+means "he has seen all of it", and the only remedy anyone had was to write more
+content. With a schedule, what comes back is what was actually shaky, and there
+is always something worth doing without a single new sentence.
+
+Questions prefer what is due over what is new - going stale is a real loss,
+meeting a new word is only an opportunity, and there is always more new
+material than there is time. Card decks cannot schedule, because being shown a
+card is not evidence of anything, but they are ordered the same way: due first,
+then never seen, then the rest.
+
+The caregiver screen shows **Waiting for review**. Expect it to be near zero
+straight after a long session and to climb over the following days.
+
+## When?
+
+The picture quiz keys its wrong answers on the verb glyph plus the object, so
+two sentences differing only in tense collapse to the same key and can never be
+the two options. The whole level ladder is built on tense, and it was shown on
+cards and never once tested.
+
+The "when?" question asks for it directly. The sentence is spoken, the picture
+is shown *without* its tense marker, and the answer is a time: बीता कल, रोज़,
+अभी, आने वाला कल. Only the times the current level actually produces are
+offered, so at level 2 it is a straight choice between yesterday and every day.
+
+English calls two of these the present. They are kept apart here because "I eat
+rice" and "I am eating rice" are different times to a learner. कल is both
+yesterday and tomorrow, which is exactly why the tense has to be heard.
+
+## Building a sentence
+
+Everything else here is a choice between pictures. The goal was that he could
+*say* "I ate an apple yesterday", and nothing was asking him to produce a word,
+only to point at one. Speech recognition is out - but production does not need
+a microphone. Hindi puts the verb last and English does not, so putting the
+English words in order is exactly the part that does not carry over from the
+Hindi sentence he already knows.
+
+Words are tapped one at a time in order rather than arranged freely and checked
+at the end. A wrong tap costs a chime and nothing else: the tile stays put and
+the line stays as it was, so there is no way to build a wrong sentence, be told
+so, and have to work out where it went wrong. The English is not spoken on
+arrival - that would make it copying - and the speaker is there to be asked.
+
+It is much the hardest thing in the app. **Build sentences from words** in the
+caregiver screen turns it off.
+
+## Rupee notes
+
+Drawn, not photographed. Photographs of banknotes are restricted and not
+something to push to a public repository casually; nothing else here is a
+bitmap, and a folder of JPEGs would multiply the offline cache. Most usefully,
+colour and length are how a note is actually told apart at a counter - nobody
+reads the denomination - so those are the two things the drawing has to get
+right, and a photograph carries a great deal that is not the lesson. The
+aspect ratios are the real millimetres, so a ₹500 is visibly longer than a ₹10.
+
+Notes appear twice: under the steps about having, giving and bringing money
+home, and as their own question - the amount is spoken, and the note is picked.
+Distractors are the neighbouring denominations, because those are the ones
+confused in a hand.
+
+The price step deliberately shows no note. A price is a number on a shelf, not
+money in a hand, and drawing a note there would suggest you pay the exact
+amount, which is the one thing the whole sequence exists to teach you need not
+do.
+
 ## Taking the scaffold away
 
 Every card normally shows the picture, the English and the Hindi at once. That

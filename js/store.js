@@ -1,6 +1,8 @@
 // Local progress and settings. Nothing leaves the device; there is no account
 // and no network call anywhere in this app.
 
+import * as review from './review.js';
+
 const KEY = 'englishteach.v1';
 
 const DEFAULTS = {
@@ -27,9 +29,13 @@ const DEFAULTS = {
     // in English, small, and at the bottom, so the learner has no reason to
     // read it - but it can be switched off if it draws taps.
     showHint: true,
+    // Putting the English in order, rather than picking a picture. The one
+    // exercise here that asks the learner to produce rather than recognise,
+    // and much the hardest, so it is worth being able to switch off.
+    buildSentences: true,
     categories: null      // null = all enabled, else array of category ids
   },
-  // item id -> { seen, ok, bad, last }
+  // item id -> { seen, ok, bad, last, box, due }
   progress: {},
   stats: { sessions: 0, answers: 0, correct: 0, byMode: {} }
 };
@@ -93,7 +99,7 @@ export function noteSession() {
 }
 
 export function wordStat(id) {
-  return state.progress[id] || { seen: 0, ok: 0, bad: 0, last: 0 };
+  return state.progress[id] || { seen: 0, ok: 0, bad: 0, last: 0, box: 0, due: 0 };
 }
 
 export function noteSeen(id) {
@@ -105,11 +111,17 @@ export function noteSeen(id) {
 }
 
 export function noteAnswer(id, correct, mode = 'other') {
+  const now = Date.now();
   const s = wordStat(id);
   s.seen += 1;
-  s.last = Date.now();
+  s.last = now;
   if (correct) s.ok += 1;
   else s.bad += 1;
+
+  // Only answers schedule. Being shown a card is not evidence of anything, so
+  // it must not push the next review further away.
+  s.box = review.nextBox(s.box, correct);
+  s.due = review.dueAt(s.box, now);
   state.progress[id] = s;
 
   state.stats.answers += 1;
@@ -140,23 +152,19 @@ export function knownWords(pool) {
 }
 
 /**
- * Weighted pick: unseen words first, then ones recently answered wrong, then
- * everything else. Avoids `exclude` (the last few items) so nothing repeats
- * back-to-back.
+ * Weighted pick, driven by the review schedule.
+ *
+ * Anything whose review has come due outranks anything else, including words
+ * never seen - going stale is a loss, meeting something new is only an
+ * opportunity, and there is always more new material than there is time.
+ * `exclude` (the last few items) is avoided so nothing repeats back-to-back.
  */
 export function chooseTarget(pool, exclude = []) {
+  const now = Date.now();
   const candidates = pool.filter((w) => !exclude.includes(w.id));
   const usable = candidates.length ? candidates : pool;
 
-  const scored = usable.map((w) => {
-    const s = wordStat(w.id);
-    let weight;
-    if (s.seen === 0) weight = 10;          // never shown: highest priority
-    else if (s.bad > s.ok) weight = 8;      // struggling: bring it back
-    else if (s.ok < 3) weight = 4;          // still learning
-    else weight = 1;                        // solid: occasional review
-    return { w, weight };
-  });
+  const scored = usable.map((w) => ({ w, weight: review.priority(wordStat(w.id), now) }));
 
   const total = scored.reduce((sum, s) => sum + s.weight, 0);
   let r = Math.random() * total;
@@ -165,6 +173,16 @@ export function chooseTarget(pool, exclude = []) {
     if (r <= 0) return s.w;
   }
   return scored[scored.length - 1].w;
+}
+
+/** A deck ordered for a session: due first, then unseen, then the rest. */
+export function sessionDeck(pool) {
+  return review.reviewOrder(pool, wordStat);
+}
+
+/** How many items in `pool` are waiting for review right now. */
+export function dueNow(pool) {
+  return review.dueCount(pool, wordStat);
 }
 
 /** How many answer choices to show, based on recent accuracy. */

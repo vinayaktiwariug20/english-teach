@@ -1,6 +1,7 @@
 import { CATEGORIES, WORDS, PHRASES, READING_WORDS } from './data.js';
 import { buildSentences, shoppableNouns } from './sentences.js';
 import { buildTransaction, changeOptions, hindiNumber } from './money.js';
+import { NOTES, moneyInPlay, tender, hindiValue, noteFor } from './notes.js';
 import { buildQuestion, visualKey, shuffle } from './quiz.js';
 import * as sp from './speech.js';
 import * as store from './store.js';
@@ -111,6 +112,7 @@ const state = {
   revealed: false,
   shop: null,
   shopStep: 0,
+  noteQ: null,
   sentSeen: [],
   sentQuiz: null,
   locked: false,
@@ -361,17 +363,22 @@ function screenCats() {
 
 // --- card modes (Words, Say it) -------------------------------------------
 
+// Card decks are ordered by the review schedule rather than shuffled: due
+// first, then never-seen, then the rest. Cards mark nothing, so they cannot
+// move an item along the schedule - but they can still put the thing most
+// worth revisiting at the front, which is most of the benefit in a mode that
+// asks no questions.
 function startWords(catId) {
-  const deck = shuffle(WORDS.filter((w) => w.cat === catId));
+  const deck = store.sessionDeck(WORDS.filter((w) => w.cat === catId));
   go('words', { cat: catId, deck, deckIndex: 0 });
 }
 
 function startPhrases() {
-  go('phrases', { deck: shuffle(PHRASES), deckIndex: 0 });
+  go('phrases', { deck: store.sessionDeck(PHRASES), deckIndex: 0 });
 }
 
 function startSentences() {
-  const deck = shuffle(
+  const deck = store.sessionDeck(
     buildSentences(activeWords(), {
       learnerGender: store.settings().learnerGender,
       level: level()
@@ -393,14 +400,93 @@ function makeTransaction() {
 function startMoney() {
   // Build first, navigate second. Going to the screen with no transaction in
   // hand makes the render fall straight back into here.
-  go('money', { shop: makeTransaction(), shopStep: 0 });
+  go('money', { shop: makeTransaction(), shopStep: 0, noteQ: null });
 }
 
 function nextTransaction() {
+  // Roughly every third time, a note question instead of another shop trip.
+  // Recognising the money is the half of the skill the arithmetic assumes.
+  if (Math.random() < 0.34 && buildNoteQuestion()) {
+    state.locked = false;
+    render();
+    return;
+  }
   state.shop = makeTransaction();
   state.shopStep = 0;
+  state.noteQ = null;
   state.locked = false;
   render();
+}
+
+/**
+ * "Which one is twenty rupees?"
+ *
+ * The distractors are the neighbouring denominations, because those are the
+ * ones actually confused in a hand - and they are the ones whose colours have
+ * to be told apart. A ₹10 against a ₹500 would be a question about size only.
+ */
+function buildNoteQuestion() {
+  const pool = moneyInPlay(store.settings().moneyMax);
+  if (pool.length < 2) return false;
+
+  const i = Math.floor(Math.random() * pool.length);
+  const target = pool[i];
+  const neighbours = pool.filter((n) => n.value !== target.value)
+    .sort((a, b) => Math.abs(a.value - target.value) - Math.abs(b.value - target.value));
+
+  const n = Math.max(2, Math.min(store.choiceCount(), pool.length));
+  state.noteQ = {
+    value: target.value,
+    choices: shuffle([target, ...neighbours.slice(0, n - 1)])
+  };
+  return true;
+}
+
+function screenNoteQuiz() {
+  const q = state.noteQ;
+  const spoken = `${q.value} rupees`;
+  const hindi = `${hindiValue(q.value)} रुपए`;
+
+  const prompt = el('div', { class: 'prompt', onclick: () => sayEn(spoken) },
+    el('div', { class: 'speaker emoji', text: '🔊' }),
+    el('div', { class: 'ask-hi hi', text: hindi })
+  );
+
+  const grid = el('div', { class: `choices n${q.choices.length} note-choices` });
+  for (const choice of q.choices) {
+    const btn = el('button', { class: 'choice' }, noteNode(choice.value, 'pic'));
+    btn.addEventListener('click', () => {
+      if (state.locked) return;
+      const id = `note/${q.value}`;
+      if (choice.value === q.value) {
+        state.locked = true;
+        store.noteAnswer(id, true, 'notes');
+        btn.classList.add('right');
+        sp.chimeCorrect();
+        const full = awardStar();
+        setTimeout(() => {
+          const msg = praise();
+          if (full) sp.chimeCelebrate();
+          overlay(full ? '🎉' : '✅', full ? 'बहुत बढ़िया!' : msg, full ? 1900 : 1200);
+          setTimeout(() => {
+            state.noteQ = null;
+            nextTransaction();
+          }, full ? 1900 : 1200);
+        }, 260);
+      } else {
+        store.noteAnswer(id, false, 'notes');
+        btn.classList.add('wrong');
+        sp.chimeRetry();
+        setTimeout(() => btn.classList.remove('wrong'), 450);
+        setTimeout(() => sayEn(spoken), 520);
+      }
+    });
+    grid.append(btn);
+  }
+
+  if (store.settings().autoSpeak) setTimeout(() => sayEn(spoken), 380);
+
+  return el('div', { class: 'screen' }, topBar(), prompt, grid);
 }
 
 function coins(n) {
@@ -411,6 +497,43 @@ function coins(n) {
     el('span', { class: 'amount', text: String(n) }),
     el('span', { class: 'amount-hi hi', text: hindiNumber(n) })
   );
+}
+
+/**
+ * One note, drawn.
+ *
+ * The aspect ratio is the real one - a ₹500 note is longer than a ₹10 note,
+ * and length is half of how a note is recognised in a hand. Colour is the
+ * other half, and neither of them is the numeral.
+ */
+function noteNode(value, size = 'ico') {
+  const n = noteFor(value);
+  if (!n) return coinNode(value, size);
+  return el('div', {
+    class: `rnote ${size === 'ico' ? 'rnote-ico' : 'rnote-pic'}`,
+    style: `--bg:${n.bg};--ink:${n.ink};--mm:${n.mm};aspect-ratio:${n.mm}/63`
+  },
+    el('div', { class: 'rnote-val' },
+      el('span', { class: 'rnote-rupee', text: '₹' }),
+      String(value)
+    ),
+    el('div', { class: 'rnote-hi hi', text: hindiValue(value) })
+  );
+}
+
+function coinNode(value, size = 'ico') {
+  return el('div', { class: `rcoin ${size === 'ico' ? 'rcoin-ico' : 'rcoin-pic'}` },
+    el('span', { class: 'rcoin-val', text: `\u20b9${value}` })
+  );
+}
+
+/** What an amount looks like as actual money in a hand. */
+function tenderStrip(amount) {
+  const strip = el('div', { class: 'tender' });
+  for (const piece of tender(amount)) {
+    strip.append(piece.kind === 'note' ? noteNode(piece.value) : coinNode(piece.value));
+  }
+  return strip;
 }
 
 function screenMoney() {
@@ -470,6 +593,12 @@ function screenMoney() {
       pictureNode(t.word, 'pic'),
       step.amount !== undefined ? coins(step.amount) : null
     ),
+    // The steps about having, giving and bringing home money show it as money.
+    // The price step does not: a price is a number written on a shelf, not a
+    // note in a hand, and showing the note there suggests you pay exactly.
+    step.amount !== undefined && step.kind === 'say' && !step.isPrice
+      ? tenderStrip(step.amount)
+      : null,
     el('div', { class: 'word-en phrase', text: step.en }),
     el('div', { class: 'word-hi hi phrase', text: step.hi })
   );
@@ -490,6 +619,17 @@ function screenMoney() {
   return el('div', { class: 'screen' }, topBar(), card, actions);
 }
 
+/**
+ * How many glyphs an icon is.
+ *
+ * It decides how much room the picture needs, and CSS cannot count. Variation
+ * selectors are stripped first, or ▶️ counts as two. Intl.Segmenter would be
+ * the precise tool and is not on every Android this has to run on.
+ */
+function glyphCount(icon) {
+  return [...String(icon || '').replace(/\uFE0F/g, '')].length;
+}
+
 /** A sentence shown as pictures: the verb, then what it acts on. */
 function sentencePicture(s, size = 'ico') {
   const cls = size === 'ico' ? 'ico' : 'pic';
@@ -504,17 +644,247 @@ function sentencePicture(s, size = 'ico') {
     }
     return node;
   }
-  return el('div', { class: 'sent-pic' },
+  // A frame like "Will you ... tomorrow?" carries three glyphs (verb, future,
+  // question) and the object beside them. At the card sizes that is wider than
+  // a phone, and it ran off BOTH edges - the same failure as the one reported
+  // from a real handset, in a frame that is shown on cards but never quizzed,
+  // so no choice tile ever revealed it.
+  return el('div', { class: `sent-pic g${Math.min(3, glyphCount(s.icon))}` },
     el('span', { class: `emoji ${cls} verb`, text: s.icon }),
     pictureNode(s.word, size)
   );
 }
 
+// ---------------------------------------------------------------------------
+// The four times a sentence can be about.
+//
+// English calls two of these the present, but "I eat rice" and "I am eating
+// rice" are different times to a learner - one is a fact about every day, the
+// other is happening at this moment - so they are kept apart. The glyphs are
+// the tense markers the cards already use; the Hindi label is what actually
+// teaches the distinction, because कल is both yesterday and tomorrow and the
+// tense is the only thing that says which.
+// ---------------------------------------------------------------------------
+const TIMES = [
+  { id: 'past',   icon: '⏪',  hi: 'बीता कल',      en: 'yesterday' },
+  { id: 'habit',  icon: '🔁',  hi: 'रोज़',          en: 'every day' },
+  { id: 'now',    icon: '▶️',  hi: 'अभी',           en: 'right now' },
+  { id: 'future', icon: '⏩',  hi: 'आने वाला कल',   en: 'tomorrow' }
+];
+
+/**
+ * "When?" - the question the app was not asking.
+ *
+ * The picture quiz keys its distractors on verb glyph plus object, so two
+ * sentences differing only in tense collapse to the same key and can never be
+ * the two options. The entire level ladder is built on tense, and until now
+ * tense was shown on cards and never once tested. This asks for it directly:
+ * the sentence is spoken, the picture is shown WITHOUT its tense marker, and
+ * the answer is a time.
+ *
+ * Only times the current level actually produces are offered, so at level 2
+ * this is a straight choice between yesterday and every day.
+ */
+function buildWhenQuiz(recent) {
+  const withTense = recent.filter((s) => s.tense);
+  if (!withTense.length) return false;
+
+  const available = new Set(state.deck.map((s) => s.tense).filter(Boolean));
+  if (available.size < 2) return false;
+
+  const target = withTense[Math.floor(Math.random() * withTense.length)];
+  const offered = TIMES.filter((t) => available.has(t.id));
+  const others = shuffle(offered.filter((t) => t.id !== target.tense));
+  const n = Math.max(2, Math.min(store.choiceCount(), offered.length));
+  const times = shuffle([
+    TIMES.find((t) => t.id === target.tense),
+    ...others.slice(0, n - 1)
+  ]);
+
+  state.sentQuiz = { kind: 'when', target, times };
+  return true;
+}
+
+function screenWhenQuiz() {
+  const { target, times } = state.sentQuiz;
+  // The picture is shown stripped of its tense marker: the marker is the answer.
+  const shown = { ...target, icon: target.baseIcon || target.icon };
+
+  const prompt = el('div', { class: 'prompt when-prompt', onclick: () => sayEn(target.en) },
+    el('div', { class: 'speaker emoji', text: '🔊' }),
+    sentencePicture(shown, 'ico')
+  );
+
+  const grid = el('div', { class: `choices n${times.length} time-choices` });
+  for (const t of times) {
+    const btn = el('button', { class: 'choice time-choice' },
+      el('div', { class: 'time-ico emoji', text: t.icon }),
+      el('div', { class: 'time-hi hi', text: t.hi }),
+      el('div', { class: 'time-en', text: t.en })
+    );
+    btn.addEventListener('click', () => {
+      if (state.locked) return;
+      // Scored against the frame and the verb, not the noun: what is being
+      // learned here is "the past of eat", and the apple is incidental.
+      const id = `when/${target.template}`;
+      if (t.id === target.tense) {
+        state.locked = true;
+        store.noteAnswer(id, true, 'tenses');
+        btn.classList.add('right');
+        sp.chimeCorrect();
+        const full = awardStar();
+        setTimeout(() => {
+          const msg = praise();
+          if (full) sp.chimeCelebrate();
+          overlay(full ? '🎉' : '✅', full ? 'बहुत बढ़िया!' : msg, full ? 1900 : 1200);
+          setTimeout(() => {
+            state.locked = false;
+            state.sentQuiz = null;
+            render();
+          }, full ? 1900 : 1200);
+        }, 260);
+      } else {
+        store.noteAnswer(id, false, 'tenses');
+        btn.classList.add('wrong');
+        sp.chimeRetry();
+        setTimeout(() => btn.classList.remove('wrong'), 450);
+        // English again, then the Hindi. The Hindi is where the tense is
+        // unmistakable, so it is the way back to the right answer.
+        setTimeout(() => sayEn(target.en), 520);
+        setTimeout(() => sayHi(target.hi), 2100);
+      }
+    });
+    grid.append(btn);
+  }
+
+  if (store.settings().autoSpeak) setTimeout(() => sayEn(target.en), 380);
+
+  return el('div', { class: 'screen' }, topBar(), prompt, grid);
+}
+
+// ---------------------------------------------------------------------------
+// Building a sentence, rather than recognising one.
+//
+// Everything else in this app is a choice between pictures. The goal was that
+// he could SAY "I ate an apple yesterday", and nothing here has ever asked him
+// to produce a word - only to point at the right one. Speech recognition is
+// out, but production does not need a microphone: Hindi is verb-final and
+// English is not, so putting the English words in order IS the part that does
+// not carry over from the sentence he already knows.
+//
+// Words are tapped one at a time in order, rather than arranged freely and
+// checked at the end. A wrong tap costs a chime and nothing else - the tile
+// stays where it is and the sentence so far stays on the line - so there is no
+// way to build a wrong sentence, get told, and have to work out where it went
+// wrong. The English is not spoken on arrival: that would make it copying.
+// The speaker is there to be asked.
+// ---------------------------------------------------------------------------
+const MAX_BUILD_WORDS = 6;
+
+function buildOrderQuiz(recent) {
+  const usable = recent.filter((s) => {
+    const words = s.en.split(' ');
+    return words.length >= 3 && words.length <= MAX_BUILD_WORDS;
+  });
+  if (!usable.length) return false;
+
+  const target = usable[Math.floor(Math.random() * usable.length)];
+  const words = target.en.split(' ');
+  state.sentQuiz = {
+    kind: 'order',
+    target,
+    words,
+    tiles: shuffle(words.map((w, i) => ({ w, i }))),
+    placed: [],
+    missed: false
+  };
+  return true;
+}
+
+function screenOrderQuiz() {
+  const q = state.sentQuiz;
+  const done = q.placed.length === q.words.length;
+
+  const prompt = el('div', { class: 'prompt build-prompt' },
+    sentencePicture(q.target, 'ico'),
+    el('div', { class: 'build-hi hi', text: q.target.hi })
+  );
+
+  // The line being built. Empty slots are shown so the length of the answer is
+  // visible from the start - it is a sentence, not an open-ended pile.
+  const line = el('div', { class: 'build-line' });
+  for (let i = 0; i < q.words.length; i++) {
+    line.append(q.placed[i]
+      ? el('span', { class: 'build-word', text: q.placed[i] })
+      : el('span', { class: 'build-slot' }));
+  }
+
+  const tray = el('div', { class: 'build-tray' });
+  for (const tile of q.tiles) {
+    if (tile.used) continue;
+    const btn = el('button', { class: 'build-tile', text: tile.w });
+    btn.addEventListener('click', () => {
+      if (state.locked || done) return;
+      const expected = q.words[q.placed.length];
+      if (tile.w === expected) {
+        tile.used = true;
+        q.placed.push(tile.w);
+        sp.chimeTick();
+        if (q.placed.length === q.words.length) finishOrder();
+        else render();
+      } else {
+        q.missed = true;
+        btn.classList.add('wrong');
+        sp.chimeRetry();
+        setTimeout(() => btn.classList.remove('wrong'), 450);
+      }
+    });
+    tray.append(btn);
+  }
+
+  const actions = el('div', { class: 'actions build-actions' },
+    el('button', { class: 'act act-hear', onclick: () => sayEn(q.target.en) },
+      el('span', { class: 'ico emoji', text: '🔊' })),
+    el('button', { class: 'act act-hindi', onclick: () => sayHi(q.target.hi) }, 'हिंदी')
+  );
+
+  return el('div', { class: 'screen' }, topBar(), prompt, line, tray, actions);
+}
+
+function finishOrder() {
+  const q = state.sentQuiz;
+  state.locked = true;
+  // Scored once for the whole sentence, and only clean if it went in without a
+  // wrong tap - otherwise the tiles could be exhausted into a right answer.
+  store.noteAnswer(`build/${q.target.id}`, !q.missed, 'building');
+  render();
+  sayEn(q.target.en);
+  sp.chimeCorrect();
+  const full = !q.missed && awardStar();
+  setTimeout(() => {
+    if (full) sp.chimeCelebrate();
+    overlay(full ? '🎉' : '✅', full ? 'बहुत बढ़िया!' : PRAISE_HI[0], full ? 1900 : 1400);
+    setTimeout(() => {
+      state.locked = false;
+      state.sentQuiz = null;
+      render();
+    }, full ? 1900 : 1400);
+  }, 900);
+}
+
 /**
  * Every fourth card, test what was just shown. Retrieval right after exposure
  * is what turns a sentence the learner can repeat into one they recognise.
+ *
+ * Two kinds of question alternate: which picture, and when. The second only
+ * exists once the level in use produces more than one tense.
  */
 function buildSentenceQuiz() {
+  const lastFour = state.sentSeen.slice(-4);
+  if (store.settings().buildSentences && Math.random() < 0.3
+      && buildOrderQuiz(lastFour)) return;
+  if (level() >= 2 && Math.random() < 0.45 && buildWhenQuiz(lastFour)) return;
+
   // Some frames need three glyphs to show subject, verb and tense, which will
   // not fit a choice tile. Those are taught on cards but never asked here.
   const recent = state.sentSeen.slice(-4).filter((s) => s.quizzable);
@@ -537,7 +907,7 @@ function buildSentenceQuiz() {
     seenKeys.add(key);
     picks.push(s);
   }
-  state.sentQuiz = { target, choices: shuffle([target, ...picks]) };
+  state.sentQuiz = { kind: 'picture', target, choices: shuffle([target, ...picks]) };
 }
 
 function screenSentenceQuiz() {
@@ -885,6 +1255,18 @@ function screenAdmin() {
       + 'the words at all - only how much help is on the screen.'
     )
   );
+  voicePanel.append(row('Build sentences from words', toggleBtn('buildSentences')));
+  voicePanel.append(
+    el('div', { class: 'note' },
+      'In Sentences, some questions ask for the English to be put in order one '
+      + 'word at a time instead of pointing at a picture. Hindi puts the verb '
+      + 'last and English does not, so the order is exactly the part that does '
+      + 'not carry over from the Hindi sentence the learner already knows - and '
+      + 'it is the only exercise here that asks them to produce rather than '
+      + 'recognise. A wrong word costs nothing: it simply does not go on the '
+      + 'line. Turn this off if it is discouraging.'
+    )
+  );
   voicePanel.append(row('Use offline voice (faster)', toggleBtn('preferLocalVoice')));
   voicePanel.append(
     el('div', { class: 'note' },
@@ -1021,16 +1403,22 @@ function screenAdmin() {
     render();
   });
 
+  const reviewPool = WORDS.concat(PHRASES);
+  const due = store.dueNow(reviewPool);
+
   const progressPanel = el('div', { class: 'panel' },
     row('Words and phrases seen', el('strong', { text: String(seenWords) })),
     row('Words learned', el('strong', { text: String(known) })),
+    row('Waiting for review', el('strong', { text: String(due) })),
     row('Questions answered', el('strong', { text: String(st.answers) })),
     row('Correct overall', el('strong', { text: `${acc}%` })),
     row('Sessions', el('strong', { text: String(st.sessions) }))
   );
 
   const MODE_LABELS = {
-    listen: 'Listen', read: 'Read', sentences: 'Sentences', money: 'Money'
+    listen: 'Listen', read: 'Read', sentences: 'Sentences',
+    tenses: 'Tenses (when?)', building: 'Building sentences',
+    money: 'Money', notes: 'Rupee notes'
   };
   const perMode = Object.entries(MODE_LABELS)
     .map(([key, label]) => [label, (st.byMode || {})[key]])
@@ -1052,6 +1440,18 @@ function screenAdmin() {
       )
     );
   }
+
+  progressPanel.append(
+    el('div', { class: 'note', style: 'margin-top:10px' },
+      'Anything answered goes into a review schedule. Answered correctly, it '
+      + 'comes back in a day, then three, then a week, then a fortnight; '
+      + 'answered wrongly, it drops to the front and returns the same session. '
+      + '"Waiting for review" is what has come round again and is being put '
+      + 'first in every mode. It is normal for it to be zero right after a long '
+      + 'session and to climb over the following days - that is the app keeping '
+      + 'hold of what was learned rather than running out of new things to say.'
+    )
+  );
 
   progressPanel.append(el('div', { style: 'margin-top:14px' }, resetBtn));
 
@@ -1119,9 +1519,14 @@ function render() {
     case 'words':     node = screenCard('word'); break;
     case 'phrases':   node = screenCard('phrase'); break;
     case 'sentences':
-      node = state.sentQuiz ? screenSentenceQuiz() : screenCard('sentence');
+      if (!state.sentQuiz) node = screenCard('sentence');
+      else if (state.sentQuiz.kind === 'when') node = screenWhenQuiz();
+      else if (state.sentQuiz.kind === 'order') node = screenOrderQuiz();
+      else node = screenSentenceQuiz();
       break;
-    case 'money':     node = screenMoney(); break;
+    case 'money':
+      node = state.noteQ ? screenNoteQuiz() : screenMoney();
+      break;
     case 'listen':  node = screenQuiz('listen'); break;
     case 'read':    node = screenQuiz('read'); break;
     case 'admin':   node = screenAdmin(); break;

@@ -280,56 +280,62 @@ const MOTION = {
 // ---------------------------------------------------------------------------
 // Tense frames, applied to every verb above.
 //
+// `tense` is the time the sentence is about, and is what the "when?" question
+// asks for. English lumps the habitual and the progressive together as the
+// present; for a learner they are different times ("I eat rice" is a fact
+// about every day, "I am eating rice" is happening now), so they are separate
+// here.
+//
 // `mark` and `sub` build the picture: subject glyph, verb glyph, tense glyph.
 // Three glyphs will not fit a choice tile on a narrow phone, so a frame that
 // needs all three is shown on cards but marked `quiz: false` and left out of
 // the recognition questions.
 // ---------------------------------------------------------------------------
 const FRAMES = [
-  { id: 'iPast', level: 2, mark: '⏪',
+  { id: 'iPast', tense: 'past', level: 2, mark: '⏪',
     en: (v, o) => `I ${v.en.past} ${o} yesterday.`,
     hi: (v, o, m) => `कल मैंने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}।` },
 
-  { id: 'iPresent', level: 2, mark: '',
+  { id: 'iPresent', tense: 'habit', level: 2, mark: '',
     en: (v, o) => `I ${v.en.base} ${o}.`,
     hi: (v, o, m, g) => `मैं ${o} ${v.hi.imperf[g]} हूँ।` },
 
-  { id: 'iProg', level: 3, mark: '▶️',
+  { id: 'iProg', tense: 'now', level: 3, mark: '▶️',
     en: (v, o) => `I am ${v.en.ing} ${o}.`,
     hi: (v, o, m, g) => `मैं ${o} ${v.hi.prog[g]} हूँ।` },
 
-  { id: 'iFuture', level: 3, mark: '⏩',
+  { id: 'iFuture', tense: 'future', level: 3, mark: '⏩',
     en: (v, o) => `I will ${v.en.base} ${o} tomorrow.`,
     hi: (v, o, m, g) => `कल मैं ${o} ${v.hi.fut1[g]}।` },
 
-  { id: 'iPastNeg', level: 4, mark: '❌',
+  { id: 'iPastNeg', tense: 'past', level: 4, mark: '❌',
     en: (v, o) => `I did not ${v.en.base} ${o}.`,
     hi: (v, o, m) => `मैंने ${o} नहीं ${v.hi.perf[`${m.g}.${m.n}`]}।` },
 
-  { id: 'hePast', level: 4, sub: '👨', mark: '⏪', quiz: false,
+  { id: 'hePast', tense: 'past', level: 4, sub: '👨', mark: '⏪', quiz: false,
     en: (v, o) => `He ${v.en.past} ${o} yesterday.`,
     hi: (v, o, m) => `कल उसने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}।` },
 
-  { id: 'hePresent', level: 4, sub: '👨',
+  { id: 'hePresent', tense: 'habit', level: 4, sub: '👨',
     en: (v, o) => `He ${v.en.s} ${o}.`,
     hi: (v, o) => `वह ${o} ${v.hi.imperf.m} है।` },
 
-  { id: 'shePresent', level: 4, sub: '👩',
+  { id: 'shePresent', tense: 'habit', level: 4, sub: '👩',
     en: (v, o) => `She ${v.en.s} ${o}.`,
     hi: (v, o) => `वह ${o} ${v.hi.imperf.f} है।` },
 
-  { id: 'heProg', level: 4, sub: '👨', mark: '▶️', quiz: false,
+  { id: 'heProg', tense: 'now', level: 4, sub: '👨', mark: '▶️', quiz: false,
     en: (v, o) => `He is ${v.en.ing} ${o}.`,
     hi: (v, o) => `वह ${o} ${v.hi.prog.m} है।` },
 
   // Questions are addressed to "you". The past question is the safest one to
   // teach first: तुमने takes the ergative, so the verb agrees with the object
   // and the listener's own gender never enters into it.
-  { id: 'youPastQ', level: 5, mark: '❓',
+  { id: 'youPastQ', tense: 'past', level: 5, mark: '❓',
     en: (v, o) => `Did you ${v.en.base} ${o}?`,
     hi: (v, o, m) => `क्या तुमने ${o} ${v.hi.perf[`${m.g}.${m.n}`]}?` },
 
-  { id: 'youFutureQ', level: 5, mark: '⏩❓', quiz: false,
+  { id: 'youFutureQ', tense: 'future', level: 5, mark: '⏩❓', quiz: false,
     en: (v, o) => `Will you ${v.en.base} ${o} tomorrow?`,
     hi: (v, o) => `क्या तुम कल ${o} ${v.hi.fut2.m}?` }
 ];
@@ -337,32 +343,32 @@ const FRAMES = [
 // Frames for the motion verbs. The destination replaces the object, and the
 // perfective agrees with the subject.
 const MOTION_FRAMES = [
-  { id: 'iWent', mark: '⏪',
+  { id: 'iWent', tense: 'past', mark: '⏪',
     en: (v, d) => `I ${v.en.past} ${d} yesterday.`,
     hi: (v, d, g) => `कल मैं ${d} ${v.hi.perfS[g]}।` },
 
-  { id: 'iGo', mark: '',
+  { id: 'iGo', tense: 'habit', mark: '',
     en: (v, d) => `I ${v.en.base} ${d}.`,
     hi: (v, d, g) => `मैं ${d} ${v.hi.imperf[g]} हूँ।` },
 
-  { id: 'iGoing', mark: '▶️',
+  { id: 'iGoing', tense: 'now', mark: '▶️',
     en: (v, d) => `I am ${v.en.ing} ${d}.`,
     hi: (v, d, g) => `मैं ${d} ${v.hi.prog[g]} हूँ।` },
 
-  { id: 'iWillGo', mark: '⏩',
+  { id: 'iWillGo', tense: 'future', mark: '⏩',
     en: (v, d) => `I will ${v.en.base} ${d} tomorrow.`,
     hi: (v, d, g) => `कल मैं ${d} ${v.hi.fut1[g]}।` },
 
-  { id: 'heWent', sub: '👨', mark: '⏪', quiz: false,
+  { id: 'heWent', tense: 'past', sub: '👨', mark: '⏪', quiz: false,
     en: (v, d) => `He ${v.en.past} ${d} yesterday.`,
     hi: (v, d) => `कल वह ${d} ${v.hi.perfS.m}।` },
 
-  { id: 'sheWent', sub: '👩', mark: '⏪', quiz: false,
+  { id: 'sheWent', tense: 'past', sub: '👩', mark: '⏪', quiz: false,
     en: (v, d) => `She ${v.en.past} ${d} yesterday.`,
     hi: (v, d) => `कल वह ${d} ${v.hi.perfS.f}।` },
 
   // तुम takes the plural perfective (गए, not गया), even for one person.
-  { id: 'youWentQ', mark: '❓',
+  { id: 'youWentQ', tense: 'past', mark: '❓',
     en: (v, d) => `Did you ${v.en.base} ${d}?`,
     hi: (v, d) => `क्या तुम ${d} ${v.hi.perfS2.m}?` }
 ];
@@ -426,7 +432,9 @@ export function buildSentences(words, { learnerGender = 'm', level = 99 } = {}) 
           hi: frame.hi(v, w.hi, meta, learnerGender),
           word: w,
           template: `${frame.id}/${verbId}`,
+          tense: frame.tense,
           icon: (frame.sub || '') + v.icon + (frame.mark || ''),
+          baseIcon: (frame.sub || '') + v.icon,
           quizzable: frame.quiz !== false
         });
       }
@@ -448,7 +456,9 @@ export function buildSentences(words, { learnerGender = 'm', level = 99 } = {}) 
           hi: frame.hi(v, w.hi, learnerGender),
           word: w,
           template: `${frame.id}/${verbId}`,
+          tense: frame.tense,
           icon: (frame.sub || '') + v.icon + (frame.mark || ''),
+          baseIcon: (frame.sub || '') + v.icon,
           quizzable: frame.quiz !== false
         });
       }
@@ -503,13 +513,13 @@ const CLAUSE_PAIRS = [
 
 const PAIR_FRAMES = [
   {
-    id: 'iPastAnd', level: 6, mark: '⏪',
+    id: 'iPastAnd', tense: 'past', level: 6, mark: '⏪',
     en: (va, oa, vb, ob) => `I ${va.en.past} ${oa} and ${vb.en.past} ${ob} yesterday.`,
     hi: (va, ha, ma, vb, hb, mb) =>
       `कल मैंने ${ha} ${va.hi.perf[`${ma.g}.${ma.n}`]} और ${hb} ${vb.hi.perf[`${mb.g}.${mb.n}`]}।`
   },
   {
-    id: 'iPresentAnd', level: 6, mark: '',
+    id: 'iPresentAnd', tense: 'habit', level: 6, mark: '',
     en: (va, oa, vb, ob) => `I ${va.en.base} ${oa} and ${vb.en.base} ${ob}.`,
     hi: (va, ha, ma, vb, hb, mb, g) =>
       `मैं ${ha} ${va.hi.imperf[g]} हूँ और ${hb} ${vb.hi.imperf[g]} हूँ।`
@@ -561,6 +571,7 @@ function buildPairs(byId, level, learnerGender) {
             { icon: vb.icon, word: B.word }
           ],
           template: `${frame.id}/${pair.a}-${pair.b}`,
+          tense: frame.tense,
           icon: va.icon + vb.icon + (frame.mark || ''),
           quizzable: false
         });

@@ -388,6 +388,25 @@ button {
    em - a relative size resolves against the inherited body size and collapses
    the glyph to about 10px. */
 .card .sent-pic .verb         { font-size: min(clamp(32px, 11vh, 96px), 16vw); }
+
+/* Sized by how many glyphs are in the icon, because they sit side by side and
+   an emoji renders about a third wider than its font size. Two glyphs plus the
+   object already fills a 360px phone; three overflowed it.
+
+   ORDER MATTERS, exactly as it does above: the verb span is class
+   "emoji pic verb", so .pic and .verb both match it at equal specificity and
+   whichever is written last wins. The object rules go first and the verb rule
+   last, or the verb gets sized like an object and runs off the screen - which
+   is the failure these rules were added to fix. */
+.card .sent-pic.g2 .pic       { font-size: min(clamp(52px, 18vh, 158px), 30vw); }
+.card .sent-pic.g2 .pic-num   { font-size: min(clamp(52px, 18vh, 158px), 30vw); }
+.card .sent-pic.g2 .pic-swatch { width: 30vw; height: 30vw; }
+.card .sent-pic.g2 .verb      { font-size: min(clamp(26px, 9vh, 76px), 13vw); }
+
+.card .sent-pic.g3 .pic       { font-size: min(clamp(44px, 15vh, 130px), 24vw); }
+.card .sent-pic.g3 .pic-num   { font-size: min(clamp(44px, 15vh, 130px), 24vw); }
+.card .sent-pic.g3 .pic-swatch { width: 24vw; height: 24vw; }
+.card .sent-pic.g3 .verb      { font-size: min(clamp(20px, 7vh, 58px), 9.5vw); }
 .choice .sent-pic .verb       { font-size: min(clamp(18px, 5.5vh, 52px), 7vw); }
 .choices.n3 .sent-pic .verb   { font-size: min(clamp(14px, 4vh, 36px), 4.6vw); }
 
@@ -542,6 +561,233 @@ button {
   font-weight: 800;
   letter-spacing: 1px;
 }
+
+/* --- building a sentence -------------------------------------------------- */
+
+.build-prompt {
+  flex-direction: column;
+  gap: clamp(4px, 1.2vh, 12px);
+  min-height: 0;
+  padding: 10px 14px;
+}
+
+.build-prompt .sent-pic .ico  { font-size: clamp(28px, 6vh, 56px); }
+.build-prompt .sent-pic .verb { font-size: clamp(20px, 4.4vh, 42px); }
+.build-prompt .sent-pic .num  { font-size: clamp(28px, 6vh, 56px); }
+.build-prompt .sent-pic .swatch {
+  width: clamp(28px, 6vh, 56px);
+  height: clamp(28px, 6vh, 56px);
+}
+
+.build-hi {
+  font-size: clamp(19px, 3.4vh, 34px);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* The line being built. Empty slots are drawn from the start so the length of
+   the answer is visible - it is a sentence, not an open-ended pile. */
+.build-line {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(5px, 1.4vw, 10px);
+  min-height: clamp(48px, 8vh, 76px);
+  padding: clamp(6px, 1.4vh, 12px);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 4px dashed var(--line);
+}
+
+.build-word,
+.build-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(34px, 5.4vh, 52px);
+  border-radius: 10px;
+  font-size: clamp(17px, 3vh, 30px);
+  font-weight: 700;
+}
+
+.build-word {
+  padding: 4px clamp(8px, 2vw, 16px);
+  background: var(--teal);
+  color: #fff;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.16);
+}
+
+.build-slot {
+  width: clamp(38px, 9vw, 62px);
+  background: rgba(0, 0, 0, 0.05);
+  border: 2px dashed var(--line);
+}
+
+.build-tray {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: clamp(7px, 1.8vw, 14px);
+  padding: clamp(4px, 1.4vh, 14px) 0;
+}
+
+/* Big enough to hit without aiming: the tap target is the point, not density. */
+.build-tile {
+  padding: clamp(8px, 1.6vh, 16px) clamp(12px, 3vw, 24px);
+  border-radius: 14px;
+  background: var(--surface);
+  border: 4px solid var(--line);
+  box-shadow: var(--shadow);
+  font-size: clamp(18px, 3.2vh, 32px);
+  font-weight: 700;
+  min-height: 48px;
+  transition: transform 0.09s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.build-tile:active { transform: translateY(4px); }
+
+.build-tile.wrong {
+  border-color: var(--rose);
+  background: #fdeef1;
+}
+
+.build-actions { justify-content: center; gap: clamp(12px, 4vw, 30px); }
+
+/* --- rupee notes ---------------------------------------------------------- */
+
+/* Drawn, not photographed. The two things that carry the recognition are the
+   colour and the length, and both are real: the aspect ratio comes from the
+   note's actual millimetres, so a 500 is visibly longer than a 10. */
+.rnote {
+  background: var(--bg);
+  color: var(--ink);
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0.28);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18), inset 0 0 0 3px rgba(255, 255, 255, 0.22);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+/* Sized by WIDTH, not height. A note is much wider than it is tall, so
+   choosing the height first pushes the width past the tile - which
+   `overflow: hidden` on .choice then quietly clips instead of reporting.
+   Width is taken as a share of the tile scaled by the note's real length, so
+   the ₹500 fills the tile and every other note is shorter in true
+   proportion; the aspect ratio supplies the height. */
+.rnote-ico { height: clamp(30px, 5.4vh, 50px); }
+
+.rnote-pic {
+  width: calc(var(--mm) / 150 * 88%);
+  max-width: calc(var(--mm) / 150 * min(88%, 46vh));
+  height: auto;
+}
+
+.rnote-val {
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.rnote-rupee { font-weight: 700; opacity: 0.85; }
+
+.rnote-hi { line-height: 1; opacity: 0.92; }
+
+.rnote-ico .rnote-val { font-size: clamp(13px, 2.4vh, 22px); }
+.rnote-ico .rnote-hi  { font-size: clamp(8px, 1.4vh, 13px); }
+.rnote-pic .rnote-val { font-size: clamp(24px, 5.4vh, 54px); }
+.rnote-pic .rnote-hi  { font-size: clamp(12px, 2.4vh, 24px); }
+
+.rcoin {
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #e8e4dc, #a9a49a 72%, #8c877d);
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  color: #2a2723;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.16);
+}
+
+.rcoin-ico { height: clamp(24px, 4.2vh, 40px); }
+.rcoin-pic { height: clamp(48px, 10vh, 96px); }
+.rcoin-ico .rcoin-val { font-size: clamp(10px, 1.8vh, 17px); font-weight: 800; }
+.rcoin-pic .rcoin-val { font-size: clamp(18px, 4vh, 38px); font-weight: 800; }
+
+/* The money laid out in a hand. Wraps rather than scrolls: ₹50 as five tens
+   is five pieces, and they must all stay visible to be counted. */
+.tender {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(3px, 1vw, 8px);
+  margin-top: clamp(4px, 1.2vh, 12px);
+  max-width: 100%;
+}
+
+/* A note is wide, so its tile needs the room a square picture does not. */
+.note-choices .choice { padding: 6px; }
+
+/* --- "when?" question ----------------------------------------------------- */
+
+/* The prompt carries the speaker AND the picture, so the picture has to be
+   held to a size that leaves the speaker recognisable next to it. */
+.when-prompt .sent-pic .ico { font-size: clamp(30px, 6.5vh, 62px); }
+.when-prompt .sent-pic .verb { font-size: clamp(22px, 5vh, 46px); }
+.when-prompt .sent-pic .num  { font-size: clamp(30px, 6.5vh, 62px); }
+.when-prompt .sent-pic .swatch {
+  width: clamp(30px, 6.5vh, 62px);
+  height: clamp(30px, 6.5vh, 62px);
+}
+
+/* A time tile is a glyph over two labels. The Hindi is the one that teaches
+   it - बीता कल and आने वाला कल are the only unambiguous way to say which कल
+   is meant - so it is the larger of the two. */
+.time-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1px, 0.5vh, 5px);
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.time-choice .time-ico {
+  font-size: clamp(26px, 6.5vh, 62px);
+  line-height: 1.1;
+}
+
+.time-choice .time-hi {
+  font-size: clamp(15px, 2.9vh, 30px);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.time-choice .time-en {
+  font-size: clamp(11px, 1.9vh, 18px);
+  color: var(--ink-soft);
+  line-height: 1.15;
+}
+
+/* Four times on a narrow phone: two rows of two, and the labels shrink rather
+   than the tile growing a scrollbar. */
+.choices.n4.time-choices .time-choice .time-hi { font-size: clamp(14px, 2.4vh, 26px); }
+.choices.n4.time-choices .time-choice .time-ico { font-size: clamp(22px, 5vh, 50px); }
+.choices.n3.time-choices .time-choice .time-hi { font-size: clamp(13px, 2.3vh, 24px); }
+.choices.n3.time-choices .time-choice .time-en { font-size: clamp(10px, 1.6vh, 15px); }
 
 .choices {
   flex: 1;
@@ -791,4 +1037,10 @@ button {
 @media (max-height: 460px) {
   .tiles { grid-template-columns: repeat(4, 1fr); }
   .card .pic { font-size: clamp(48px, 26vh, 120px); }
+
+  /* Landscape on a phone has no room for the money card AND the notes under
+     it - shrinking them was not enough, the card still ran over. The notes go
+     rather than the sentence: the numeral above them still says the amount,
+     and this is the orientation nobody learns in anyway. */
+  .money-card .tender { display: none; }
 }
