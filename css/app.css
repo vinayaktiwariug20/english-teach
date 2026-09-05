@@ -258,12 +258,28 @@ button {
   cursor: default;
 }
 
-/* The bottom two sit above the system gesture strip on Android, which would
-   otherwise swallow the tap. */
+/* The bottom two must clear the system gesture strip on Android, which would
+   otherwise swallow the tap - but they are STRETCHED down to the real edge
+   rather than lifted off it. Lifting them left a 24px dead strip along the
+   bottom of the screen, and on a desktop that is exactly where the pointer
+   goes: a mouse is aimed at the corner itself, which is an infinitely large
+   target, so the click landed on the page and silently reset the sequence.
+   A finger taps approximately and lands inside the box, which is why this only
+   ever failed with a mouse.
+
+   Extending downward costs nothing on Android: the gesture bar still takes the
+   taps inside its own strip, and everything above it lands as before. */
+.corner { bottom: auto; }
 .corner.tl { top: 0; left: 0; }
 .corner.tr { top: 0; right: 0; }
-.corner.bl { bottom: calc(env(safe-area-inset-bottom) + 24px); left: 0; }
-.corner.br { bottom: calc(env(safe-area-inset-bottom) + 24px); right: 0; }
+.corner.bl,
+.corner.br {
+  top: auto;
+  bottom: 0;
+  height: calc(env(safe-area-inset-bottom) + 84px);
+}
+.corner.bl { left: 0; }
+.corner.br { right: 0; }
 
 /* --- category grid ------------------------------------------------------- */
 

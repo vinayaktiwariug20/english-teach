@@ -2,7 +2,7 @@
 // network again, which is what makes it usable with no signal and guarantees
 // nothing can ever inject an ad into it.
 
-const CACHE = 'english-teach-v24';
+const CACHE = 'english-teach-v25';
 
 const ASSETS = [
   './',

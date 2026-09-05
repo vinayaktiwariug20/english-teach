@@ -107,6 +107,16 @@ Nothing on screen reacts until the whole sequence is correct — no highlight, n
 prompt, no half-finished state — so a stray corner tap does nothing visible, and
 there is no popup to get stuck in.
 
+The hotspots are 60px squares reaching the true edges of the screen, including
+the bottom two. They did not always: they were lifted 24px off the bottom to
+clear the Android gesture bar, which left a dead strip along the bottom of the
+window. On a phone that was invisible, because a thumb lands approximately and
+falls inside the box. With a mouse it made the gesture almost unusable — a
+pointer is aimed at the corner itself, which under Fitts's law is an infinitely
+large target, so the click landed on the page and silently reset the sequence.
+The boxes now stretch down to the edge instead of being lifted off it, which
+keeps the same clearance above the gesture bar and costs nothing on Android.
+
 There you can set speaking speed and voices, turn spoken Hindi on or off, fix the
 number of answer choices, switch topics on and off, and see progress.
 
