@@ -378,6 +378,41 @@ word. The type is now `cqh`, a percentage of the note's own height, which is the
 right unit. The `vw` values above it in the file are the fallback for browsers
 without container queries; both paths are measured by `tools/note-check.html`.
 
+## Checks
+
+Three of them, all runnable without a browser or with one:
+
+```
+node tools/syntax-check.mjs     # every module parses as the browser parses it
+node tools/lang-check.mjs       # articles, agreement, number words
+tools/note-check.html           # note and coin layout, both sizing paths
+tools/card-check.html           # every sentence shape against the viewport
+tools/emoji-check.html          # glyphs this device's font cannot draw
+```
+
+Each exists because something shipped broken and a person found it.
+
+`syntax-check` exists because `node --check` is not enough: it parses a `.js`
+file as a script, and a stray apostrophe inside a quoted string (`learner's`)
+re-synchronises on a later quote so the file still parses as a whole. It
+reported `app.js` clean while the browser refused to load it and the app came up
+as a blank page. Importing as a module is what the browser actually does.
+
+`lang-check` covers the agreement bugs, which are invisible in review and
+obvious to a reader: "a office", "I want book.", "These are scissors" against
+ये कैंची हैं, "The pants costs". Two of its own checks were wrong before they
+were right — a hand-written list of mass nouns flagged forty-six good sentences,
+and a `` in a regex never matches beside a Devanagari letter, so a test was
+silently always false. A check that cannot fail is worth nothing, so each one
+was confirmed by reintroducing the bug it is meant to catch.
+
+`emoji-check` draws every glyph to a canvas and compares it against a codepoint
+no font defines. Windows 10's Segoe UI Emoji stops short of Emoji 13, so window,
+bucket, mirror and toothbrush rendered as empty boxes — visible to the learner,
+invisible to any test that reads text rather than pixels. The app now measures
+this at runtime in `js/glyphs.js` and drops words it cannot draw, so the same
+build is correct on a new phone and an old desktop.
+
 ## Taking the scaffold away
 
 Every card normally shows the picture, the English and the Hindi at once. That

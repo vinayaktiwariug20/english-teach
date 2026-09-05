@@ -24,6 +24,8 @@
 //
 // English compounds regularly, so it is generated. Hindi does not - every one
 // of the twenty-ones and thirty-sevens is its own word - so it is a table.
+import { enPlural } from './sentences.js';
+
 const HI_NUM = [
   'शून्य', 'एक', 'दो', 'तीन', 'चार', 'पाँच', 'छह', 'सात', 'आठ', 'नौ', 'दस',
   'ग्यारह', 'बारह', 'तेरह', 'चौदह', 'पंद्रह', 'सोलह', 'सत्रह', 'अठारह', 'उन्नीस', 'बीस',
@@ -103,6 +105,12 @@ export function buildTransaction(items, { maxPrice = 10, learnerGender = 'm' } =
   const change = paid - price;
 
   const of = meta.g === 'f' ? 'की' : 'का';
+  // "The pants COST", not "costs". English number is its own thing: पैंट and
+  // चश्मा are singular in Hindi and plural in English, so the Hindi line here
+  // is right either way and only the verb has to agree. The rule lives in
+  // sentences.js and is imported rather than restated - having two copies of
+  // "is this plural" is how the article bug happened.
+  const costs = enPlural(meta) ? 'cost' : 'costs';
   const give = learnerGender === 'f' ? 'दूँगी' : 'दूँगा';
   const bring = learnerGender === 'f' ? 'लाऊँगी' : 'लाऊँगा';
   const leftHi = change === 1 ? 'एक रुपया बचा।' : `${hindiNumber(change)} रुपए बचे।`;
@@ -111,7 +119,7 @@ export function buildTransaction(items, { maxPrice = 10, learnerGender = 'm' } =
   const steps = [
     {
       kind: 'say',
-      en: `The ${word.en} costs ${enAmount(price)}.`,
+      en: `The ${word.en} ${costs} ${enAmount(price)}.`,
       hi: `${word.hi} ${hiAmountOblique(price)} ${of} है।`,
       amount: price,
       // A price is a number on a shelf, not money in a hand. Drawing notes

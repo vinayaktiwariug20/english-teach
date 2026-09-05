@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Emoji coverage check</title>
+<link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div id="root" style="padding:16px;font:14px system-ui"></div>
+<script type="module">
+// Which glyphs actually render on THIS machine.
+//
+// The app is aimed at Windows 10, whose Segoe UI Emoji stops at Emoji 13, and
+// at older Android. A glyph the font does not have renders as a "tofu" box -
+// visible to a user, invisible to any test that only reads textContent. This
+// draws every glyph the app can show and compares it against a codepoint no
+// font defines; identical pixels mean nothing was drawn.
+import { WORDS, PHRASES, CATEGORIES } from '../js/data.js';
+import { buildSentences } from '../js/sentences.js';
+
+const cv = document.createElement('canvas');
+cv.width = 64; cv.height = 64;
+const ctx = cv.getContext('2d', { willReadFrequently: true });
+const FONT = '40px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+
+function bitmap(text) {
+  ctx.clearRect(0, 0, 64, 64);
+  ctx.font = FONT;
+  ctx.textBaseline = 'top';
+  ctx.fillText(text, 4, 4);
+  return ctx.getImageData(0, 0, 64, 64).data.join(',');
+}
+
+// U+10FFFF is a noncharacter: no font has a glyph, so this is what tofu looks like
+const TOFU = bitmap(String.fromCodePoint(0x10FFFF));
+const BLANK = bitmap(' ');
+
+function supported(glyph) {
+  const b = bitmap(glyph);
+  return b !== TOFU && b !== BLANK;
+}
+
+// every glyph the app can put on screen
+const glyphs = new Map();
+const add = (g, where) => {
+  if (!g) return;
+  for (const ch of splitGlyphs(g)) {
+    if (!glyphs.has(ch)) glyphs.set(ch, new Set());
+    glyphs.get(ch).add(where);
+  }
+};
+function splitGlyphs(s) {
+  // keep ZWJ sequences and variation selectors together
+  if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+    return [...new Intl.Segmenter().segment(s)].map((x) => x.segment);
+  }
+  return [...s];
+}
+
+for (const w of WORDS) add(w.emoji, `word ${w.id}`);
+for (const c of CATEGORIES) add(c.emoji, `topic ${c.id}`);
+for (const s of buildSentences(WORDS, { level: 6 })) add(s.icon, `sentence ${s.template}`);
+// interface glyphs, gathered by hand from app.js
+for (const g of ['🏠','⭐','🎉','✅','👋','🔊','👁️','🖼️','👂','🔤','💬','🗣️','💰',
+                 '⏪','🔁','▶️','⏩','❌','❓','👨','👩','🤲','❤️','👉','🍽️','🥤','👀',
+                 '👕','🧼','💵','🔓','🔒','🚶','🏃','→']) add(g, 'interface');
+
+const missing = [];
+for (const [g, where] of glyphs) {
+  if (!supported(g)) missing.push({ g, cp: [...g].map((c) => 'U+' + c.codePointAt(0).toString(16).toUpperCase()).join(' '), where: [...where].slice(0, 3) });
+}
+
+window.report = () => ({
+  font: FONT,
+  checked: glyphs.size,
+  missing: missing.map((m) => `${m.g} (${m.cp}) - ${m.where.join(', ')}`)
+});
+
+document.getElementById('root').textContent =
+  `checked ${glyphs.size} glyphs; ${missing.length} not rendered by this font`;
+</script>
+</body></html>

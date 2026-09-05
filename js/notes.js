@@ -59,7 +59,11 @@ export function hindiValue(v) {
  * proportions, so a straight-on photograph needs no trimming. Denominations
  * left out keep the drawing, so a half-finished set is fine.
  */
-export const NOTE_PHOTOS = {};
+export const NOTE_PHOTOS = {
+  10: './images/notes/10.jpg',
+  20: './images/notes/20.jpg',
+  50: './images/notes/50.jpg'
+};
 
 export function photoFor(value) {
   return NOTE_PHOTOS[value] || null;

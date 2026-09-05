@@ -19,7 +19,7 @@
 // and the sentence is wrong, which is the one thing worth checking here.
 
 // id -> { g: 'm'|'f', n: 'sg'|'pl', art: 'a'|'an'|'', use: [...] }
-const NOUNS = {
+export const NOUNS = {
   // ---- food: things you eat -------------------------------------------
   'food/apple':     { g: 'm', n: 'sg', art: 'an', use: ['eat', 'want', 'like', 'this', 'buy'] },
   'food/banana':    { g: 'm', n: 'sg', art: 'a',  use: ['eat', 'want', 'like', 'this', 'buy'] },
@@ -402,7 +402,7 @@ function objectPhrase(word, meta, wantArticle) {
 }
 
 /** English number, which is not always the Hindi one ("pants" vs पैंट). */
-function enPlural(meta) {
+export function enPlural(meta) {
   return (meta.enN || meta.n) === 'pl';
 }
 

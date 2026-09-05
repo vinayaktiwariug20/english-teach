@@ -3,6 +3,7 @@ import { buildSentences, shoppableNouns } from './sentences.js';
 import { buildTransaction, changeOptions, hindiNumber } from './money.js';
 import { NOTES, moneyInPlay, tender, hindiValue, noteFor, photoFor } from './notes.js';
 import { buildQuestion, visualKey, shuffle } from './quiz.js';
+import { renderable, missingGlyphs } from './glyphs.js';
 import * as sp from './speech.js';
 import * as store from './store.js';
 
@@ -141,10 +142,15 @@ function enabledCats() {
   return chosen;
 }
 
+// Measured once: every word whose emoji this device can actually draw. A glyph
+// the font lacks renders as a box, and being shown a box and asked to name it
+// is worse than never meeting the word.
+const DRAWABLE = renderable(WORDS);
+
 function activeWords() {
   const cats = enabledCats();
-  const pool = WORDS.filter((w) => cats.includes(w.cat));
-  return pool.length >= 4 ? pool : WORDS;
+  const pool = DRAWABLE.filter((w) => cats.includes(w.cat));
+  return pool.length >= 4 ? pool : DRAWABLE;
 }
 
 /**
@@ -165,7 +171,8 @@ function quizWords() {
 
 function readingPool() {
   const cats = enabledCats();
-  const pool = READING_WORDS.filter((w) => cats.includes(w.cat));
+  const drawable = new Set(DRAWABLE.map((w) => w.id));
+  const pool = READING_WORDS.filter((w) => cats.includes(w.cat) && drawable.has(w.id));
   return pool.length >= 4 ? pool : READING_WORDS;
 }
 
@@ -369,7 +376,7 @@ function screenCats() {
 // worth revisiting at the front, which is most of the benefit in a mode that
 // asks no questions.
 function startWords(catId) {
-  const deck = store.sessionDeck(WORDS.filter((w) => w.cat === catId));
+  const deck = store.sessionDeck(DRAWABLE.filter((w) => w.cat === catId));
   go('words', { cat: catId, deck, deckIndex: 0 });
 }
 
@@ -431,8 +438,19 @@ function buildNoteQuestion() {
 
   const i = Math.floor(Math.random() * pool.length);
   const target = pool[i];
-  const neighbours = pool.filter((n) => n.value !== target.value)
-    .sort((a, b) => Math.abs(a.value - target.value) - Math.abs(b.value - target.value));
+
+  // Distractors are the neighbouring denominations, because those are the ones
+  // confused in a hand - but photographs and drawings are matched first. With
+  // only some denominations photographed, a lone drawing among photographs is
+  // the odd one out on sight, and the question can be answered without knowing
+  // which note is which. The picture quiz guards the same way against a colour
+  // disc sitting among emoji.
+  const near = (a, b) => Math.abs(a.value - target.value) - Math.abs(b.value - target.value);
+  const wanted = !!photoFor(target.value);
+  const others = pool.filter((n) => n.value !== target.value);
+  const sameKind = others.filter((n) => !!photoFor(n.value) === wanted).sort(near);
+  const otherKind = others.filter((n) => !!photoFor(n.value) !== wanted).sort(near);
+  const neighbours = [...sameKind, ...otherKind];
 
   const n = Math.max(2, Math.min(store.choiceCount(), pool.length));
   state.noteQ = {
@@ -1391,6 +1409,23 @@ function screenAdmin() {
       render();
     });
     chips.append(chip);
+  }
+
+  const missing = missingGlyphs(WORDS);
+  if (missing.length) {
+    wrap.append(
+      el('h2', { text: 'Pictures this device cannot draw' }),
+      el('div', { class: 'panel' },
+        el('div', { class: 'note warn' },
+          `${missing.length} word${missing.length === 1 ? '' : 's'} `
+          + `(${missing.map((w) => w.en).join(', ')}) `
+          + 'use a picture the emoji font on this device does not have, so they '
+          + 'would appear as an empty box. They have been left out here. They '
+          + 'will show up normally on a device with a newer emoji font, and '
+          + 'either way it makes no difference to recorded progress.'
+        )
+      )
+    );
   }
 
   wrap.append(

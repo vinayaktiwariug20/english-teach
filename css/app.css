@@ -748,12 +748,17 @@ button {
    drawn or photographed, and every size measured for the drawings still holds. */
 .rnote-photo { padding: 0; }
 
+/* `contain`, not `cover`. The box is the note's real proportions, but a
+   photograph rarely is - a scan with a margin round it is wider than 123:63 -
+   and `cover` fills the box by cropping the overflow, which takes the ends off
+   the note: exactly the part with the denomination printed on it. `contain`
+   fits the whole note inside and leaves a band of the drawn note's colour
+   behind it, which reads as a mount rather than a mistake. */
 .rnote-photo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
-  border-radius: 4px;
 }
 
 .rcoin {
