@@ -2,6 +2,7 @@
 // and no network call anywhere in this app.
 
 import * as review from './review.js';
+import * as research from './research.js';
 
 const KEY = 'englishteach.v1';
 
@@ -33,11 +34,20 @@ const DEFAULTS = {
     // exercise here that asks the learner to produce rather than recognise,
     // and much the hardest, so it is worth being able to switch off.
     buildSentences: true,
-    categories: null      // null = all enabled, else array of category ids
+    categories: null,     // null = all enabled, else array of category ids
+    // A study code, typed in by whoever is running the study - "GS1-014". It
+    // is the only identifier that exists anywhere in this app, and it means
+    // nothing without the paper list that maps it to a child. Blank normally.
+    studyId: '',
+    // The event log is what makes a before-and-after comparison possible. It
+    // stays on the device like everything else and can be switched off.
+    logEvents: true
   },
   // item id -> { seen, ok, bad, last, box, due }
   progress: {},
-  stats: { sessions: 0, answers: 0, correct: 0, byMode: {} }
+  stats: { sessions: 0, answers: 0, correct: 0, byMode: {} },
+  // One row per answer: see research.js. Capped, oldest dropped first.
+  log: []
 };
 
 function clone(o) {
@@ -54,7 +64,8 @@ function load() {
     const loaded = {
       settings: { ...DEFAULTS.settings, ...(parsed.settings || {}) },
       progress: parsed.progress || {},
-      stats: { ...DEFAULTS.stats, byMode: {}, ...(parsed.stats || {}) }
+      stats: { ...DEFAULTS.stats, byMode: {}, ...(parsed.stats || {}) },
+      log: Array.isArray(parsed.log) ? parsed.log : []
     };
 
     // Levels arrived after people were already using the full sentence set, so
@@ -110,9 +121,38 @@ export function noteSeen(id) {
   save();
 }
 
+/**
+ * The question currently on screen, so an answer can be timed and counted as a
+ * first attempt or a retry.
+ *
+ * Called where a question is BUILT rather than where it is drawn: a screen can
+ * re-render for reasons that have nothing to do with the learner, and restarting
+ * the clock then would record everyone as very fast. `key` makes the call
+ * idempotent for the screens that do re-render mid-question.
+ */
+let pending = null;
+
+export function startQuestion(key) {
+  if (pending && pending.key === key) return;
+  pending = { key, t0: Date.now(), attempts: 0 };
+}
+
 export function noteAnswer(id, correct, mode = 'other') {
   const now = Date.now();
   const s = wordStat(id);
+  const boxBefore = s.box || 0;
+  // How overdue this item was when it came round, which is what makes the
+  // review data say something about retention rather than about practice.
+  const overdueDays = s.due ? Math.floor((now - s.due) / 86400000) : null;
+
+  let ms = null;
+  let attempt = 1;
+  if (pending) {
+    pending.attempts += 1;
+    attempt = pending.attempts;
+    ms = now - pending.t0;
+  }
+
   s.seen += 1;
   s.last = now;
   if (correct) s.ok += 1;
@@ -134,12 +174,64 @@ export function noteAnswer(id, correct, mode = 'other') {
   m.answers += 1;
   if (correct) m.correct += 1;
 
+  if (state.settings.logEvents) {
+    research.append(state.log, research.makeEvent({
+      t: now, mode, id, correct, ms, attempt,
+      box: boxBefore, overdueDays, level: state.settings.level
+    }));
+  }
+
+  // A correct answer ends the question; a wrong one leaves it on screen, still
+  // being worked on, so the clock and the attempt count keep running.
+  if (correct) pending = null;
+
+  save();
+}
+
+// --- research -------------------------------------------------------------
+
+export function eventLog() {
+  return state.log;
+}
+
+export function researchSummary() {
+  return research.summarise(state.log, state.progress);
+}
+
+export function researchCsv() {
+  return research.toCsv(state.log, state.settings.studyId);
+}
+
+/**
+ * Everything a study needs from this device, in one object.
+ *
+ * The settings go in because they are the conditions the data was produced
+ * under - a result at level 2 with the English hidden is not the same result as
+ * one at level 5 with it shown, and a month later nobody will remember which.
+ */
+export function researchExport() {
+  return {
+    format: 'english-teach/research/1',
+    exportedAt: new Date().toISOString(),
+    studyId: state.settings.studyId || null,
+    settings: { ...state.settings },
+    summary: research.summarise(state.log, state.progress),
+    dailyCurve: research.dailyCurve(state.log),
+    stats: state.stats,
+    progress: state.progress,
+    events: state.log
+  };
+}
+
+export function clearLog() {
+  state.log = [];
   save();
 }
 
 export function resetProgress() {
   state.progress = {};
   state.stats = clone(DEFAULTS.stats);
+  state.log = [];
   save();
 }
 

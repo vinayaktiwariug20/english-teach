@@ -675,6 +675,26 @@ button {
 
 .build-actions { justify-content: center; gap: clamp(12px, 4vw, 30px); }
 
+/* Export buttons: two side by side, stacking on a narrow phone. */
+.export-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.export-row .btn { flex: 1 1 190px; }
+
+.admin input[type='text'] {
+  font-size: 16px;
+  min-height: 40px;
+  max-width: 58%;
+  padding: 6px 10px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
 /* --- rupee notes ---------------------------------------------------------- */
 
 /* Drawn, not photographed. The two things that carry the recognition are the

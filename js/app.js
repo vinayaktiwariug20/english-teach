@@ -453,6 +453,7 @@ function buildNoteQuestion() {
   const neighbours = [...sameKind, ...otherKind];
 
   const n = Math.max(2, Math.min(store.choiceCount(), pool.length));
+  store.startQuestion(`note/${target.value}/${Date.now()}`);
   state.noteQ = {
     value: target.value,
     choices: shuffle([target, ...neighbours.slice(0, n - 1)])
@@ -583,6 +584,7 @@ function screenMoney() {
   if (store.settings().autoSpeak) setTimeout(() => sayEn(step.en), 320);
 
   if (step.kind === 'ask') {
+    store.startQuestion(`money/${t.id}/${state.shopStep}`);
     // A compact prompt, not the full card: the sum and the answer buttons need
     // the room, and the item has already been shown on the steps before this.
     const prompt = el('div', { class: 'prompt money-ask', onclick: () => sayEn(step.en) },
@@ -740,6 +742,7 @@ function buildWhenQuiz(recent) {
     ...others.slice(0, n - 1)
   ]);
 
+  store.startQuestion(`when/${target.id}/${Date.now()}`);
   state.sentQuiz = { kind: 'when', target, times };
   return true;
 }
@@ -828,6 +831,7 @@ function buildOrderQuiz(recent) {
   if (!usable.length) return false;
 
   const target = usable[Math.floor(Math.random() * usable.length)];
+  store.startQuestion(`build/${target.id}/${Date.now()}`);
   const words = target.en.split(' ');
   state.sentQuiz = {
     kind: 'order',
@@ -946,6 +950,7 @@ function buildSentenceQuiz() {
     seenKeys.add(key);
     picks.push(s);
   }
+  store.startQuestion(`sentences/${target.id}/${Date.now()}`);
   state.sentQuiz = { kind: 'picture', target, choices: shuffle([target, ...picks]) };
 }
 
@@ -1078,6 +1083,7 @@ function askQuestion(mode) {
   state.target = q.target;
   state.choices = q.choices;
   state.recent = q.recent;
+  store.startQuestion(`${mode}/${q.target.id}/${Date.now()}`);
 }
 
 function startQuiz(mode) {
@@ -1512,6 +1518,90 @@ function screenAdmin() {
   progressPanel.append(el('div', { style: 'margin-top:14px' }, resetBtn));
 
   wrap.append(el('h2', { text: 'Progress' }), progressPanel);
+
+  // --- research ------------------------------------------------------------
+  //
+  // Only of interest to someone running a study, so it sits at the bottom,
+  // below everything a caregiver needs day to day.
+  const rs = store.researchSummary();
+
+  const idInput = el('input', {
+    type: 'text', value: s.studyId || '', placeholder: 'e.g. GS1-014',
+    maxlength: '24', autocapitalize: 'characters', spellcheck: 'false'
+  });
+  idInput.addEventListener('change', () => {
+    store.setSetting('studyId', idInput.value.trim());
+  });
+
+  const pct = (v) => (v == null ? '—' : `${Math.round(v * 100)}%`);
+
+  const researchPanel = el('div', { class: 'panel' },
+    row('Study code on this device', idInput),
+    row('Logging answers', toggleBtn('logEvents')),
+    row('Answers recorded', el('strong', { text: String(rs.events) })),
+    row('Days used', el('strong', { text: String(rs.daysActive) })),
+    row('Time answering', el('strong', { text: `${rs.activeMinutes} min` })),
+    row('Correct first try', el('strong', { text: pct(rs.firstTryAccuracy) })),
+    row('Correct after a day away', el('strong', {
+      text: rs.retention.n ? `${pct(rs.retention.accuracy)}  (${rs.retention.n})` : '—'
+    })),
+    row('Words mastered', el('strong', { text: String(rs.itemsMastered) }))
+  );
+
+  const download = (name, text, type) => {
+    const blob = new Blob([text], { type });
+    const url = URL.createObjectURL(blob);
+    const a = el('a', { href: url, download: name });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  };
+
+  const stamp = () => {
+    const d = new Date().toISOString().slice(0, 10);
+    return `${(s.studyId || 'device').replace(/[^A-Za-z0-9_-]/g, '')}_${d}`;
+  };
+
+  const buttons = el('div', { class: 'export-row' },
+    el('button', {
+      class: 'btn',
+      onclick: () => download(`${stamp()}.csv`, store.researchCsv(), 'text/csv')
+    }, 'Export answers (CSV)'),
+    el('button', {
+      class: 'btn',
+      onclick: () => download(`${stamp()}.json`,
+        JSON.stringify(store.researchExport(), null, 1), 'application/json')
+    }, 'Export everything (JSON)')
+  );
+
+  // A download can be awkward inside an installed app on some phones, so the
+  // same data can go to the clipboard and be pasted into an email.
+  const copyBtn = el('button', { class: 'btn', text: 'Copy CSV to clipboard' });
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(store.researchCsv());
+      copyBtn.textContent = 'Copied';
+    } catch (_) {
+      copyBtn.textContent = 'Could not copy - use Export instead';
+    }
+    setTimeout(() => { copyBtn.textContent = 'Copy CSV to clipboard'; }, 2500);
+  });
+
+  researchPanel.append(buttons, el('div', { style: 'margin-top:10px' }, copyBtn));
+  researchPanel.append(
+    el('div', { class: 'note', style: 'margin-top:10px' },
+      'For a before-and-after study. The CSV is one row per answer, with the '
+      + 'time it was given, whether it was the first try, and how long it took; '
+      + 'the JSON adds the daily accuracy curve and the review schedule. '
+      + 'Nothing is ever sent anywhere - it leaves this device only when you '
+      + 'press one of these buttons. The study code is the only identifier and '
+      + 'means nothing without the list that maps it to a child, so keep no '
+      + 'names here.'
+    )
+  );
+
+  wrap.append(el('h2', { text: 'Research' }), researchPanel);
 
   // --- how to get back here ----------------------------------------------
   wrap.append(
